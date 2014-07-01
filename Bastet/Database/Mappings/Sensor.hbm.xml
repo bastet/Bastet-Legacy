@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Bastet" namespace="Bastet.Database.Model">
+  <class name="Sensor" table="readings">
+    <id name="Id">
+      <generator class="guid" />
+    </id>
+
+    <many-to-one name="Device" />
+  </class>
+</hibernate-mapping>
