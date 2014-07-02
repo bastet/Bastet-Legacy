@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Data;
 using MoreLinq;
+using NHibernate;
+using NHibernate.Context;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Ninject;

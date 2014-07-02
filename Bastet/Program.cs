@@ -1,9 +1,7 @@
 ﻿using System;
-using Bastet.Database.Model;
 using CommandLine;
 using CommandLine.Text;
-using NHibernate.Criterion;
-using NHibernate.Linq;
+using NHibernate;
 using Ninject;
 
 namespace Bastet
@@ -20,6 +18,8 @@ namespace Bastet
 
             _db = new Database.Database(options.CleanDatabase);
             _kernel.Bind<Database.Database>().ToConstant(_db);
+            _kernel.Bind<ISessionFactory>().ToMethod(c => _db.SessionFactory);
+            _kernel.Bind<ISession>().ToMethod(c => _db.SessionFactory.OpenSession());
 
             _server = new HttpServer.HttpServer(options.HttpPort);
             _kernel.Bind<HttpServer.HttpServer>().ToConstant(_server);
@@ -28,34 +28,6 @@ namespace Bastet
         public void Run()
         {
             _server.Start(_kernel);
-
-            using (var sess = _db.SessionFactory.OpenSession())
-            {
-
-                //Create a Product...
-                var device = new Device
-                {
-                    Url = "http://google.co.uk"
-                };
-
-                //And save it to the database
-                sess.Save(device);
-                sess.Flush();
-
-                // Note that we do not use the table name specified
-                // in the mapping, but the class name, which is a nice
-                // abstraction that comes with NHibernate
-                var q = sess.CreateCriteria<Device>()
-                            .Add(Restrictions.NotEqProperty("Url", "Id"));
-                var list = q.List<Device>();
-
-                var devices = from d in sess.QueryOver<Device>()
-                              where d.Url != null
-                              select d;
-
-                // List all the entries' names
-                devices.List().ForEach(p => Console.WriteLine(p.Id));
-            }
 
             Console.ReadLine();
         }
@@ -78,10 +50,14 @@ namespace Bastet
     public class Options
     {
         [Option('c', "clean", Required = false, HelpText = "If set, clear all data from the database on startup")]
+// ReSharper disable UnusedAutoPropertyAccessor.Global
         public bool CleanDatabase { get; set; }
+// ReSharper restore UnusedAutoPropertyAccessor.Global
 
         [Option('h', "http", Required = true, HelpText = "The port to host the HTTP server on")]
+// ReSharper disable UnusedAutoPropertyAccessor.Global
         public ushort HttpPort { get; set; }
+// ReSharper restore UnusedAutoPropertyAccessor.Global
 
         [HelpOption]
         public string GetUsage()

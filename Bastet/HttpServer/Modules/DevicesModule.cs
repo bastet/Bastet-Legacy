@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Bastet.Database.Model;
 using Nancy;
+using Nancy.ModelBinding;
 
 namespace Bastet.HttpServer.Modules
 {
@@ -20,8 +21,10 @@ namespace Bastet.HttpServer.Modules
             _db = db;
 
             Get["/"] = ListDevices;
+            Post["/"] = CreateDevice;
 
             Get["/{id}"] = DeviceDetails;
+            Delete["/{id}"] = DeleteDevice;
         }
 
         /// <summary>
@@ -41,6 +44,16 @@ namespace Bastet.HttpServer.Modules
             }
         }
 
+        private dynamic CreateDevice(dynamic parameters)
+        {
+            var device = this.Bind<Device>("Id");
+
+            using (var session = _db.SessionFactory.OpenSession())
+                session.Save(device);
+
+            return device;
+        }
+
         /// <summary>
         /// Return details about an individual device
         /// </summary>
@@ -58,8 +71,13 @@ namespace Bastet.HttpServer.Modules
                         .WithStatusCode(HttpStatusCode.BadRequest);
                 }
 
-                return (dynamic)session.QueryOver<Device>().Where(a => a.Id == id).SingleOrDefault() ?? HttpStatusCode.NotFound;
+                return (dynamic)session.Get<Device>(id) ?? HttpStatusCode.NotFound;
             }
+        }
+
+        private dynamic DeleteDevice(dynamic parameters)
+        {
+            return ModuleHelpers.Delete<Device>(_db, Negotiate, (string)parameters.id);
         }
     }
 }

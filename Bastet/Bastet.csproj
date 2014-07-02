@@ -98,10 +98,12 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="HttpServer\Bootstrapper.cs" />
     <Compile Include="HttpServer\CustomJsonSerializer.cs" />
+    <Compile Include="HttpServer\ModuleHelpers.cs" />
     <Compile Include="HttpServer\HttpServer.cs" />
     <Compile Include="Database\Model\Device.cs" />
     <Compile Include="Database\Model\Reading.cs" />
     <Compile Include="Database\Model\Sensor.cs" />
+    <Compile Include="HttpServer\Modules\SensorsModule.cs" />
     <Compile Include="HttpServer\Modules\DevicesModule.cs" />
     <Compile Include="HttpServer\Modules\MainModule.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Concat.cs" />
@@ -125,7 +127,9 @@
     </None>
     <EmbeddedResource Include="Database\Mappings\Device.hbm.xml" />
     <EmbeddedResource Include="Database\Mappings\Reading.hbm.xml" />
-    <EmbeddedResource Include="Database\Mappings\Sensor.hbm.xml" />
+    <EmbeddedResource Include="Database\Mappings\Sensor.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

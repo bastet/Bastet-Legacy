@@ -1,12 +1,11 @@
 ﻿using Nancy;
-using Nancy.Routing;
 
 namespace Bastet.HttpServer.Modules
 {
     public class MainModule
         : NancyModule
     {
-        public MainModule(IRouteCacheProvider routeCacheProvider)
+        public MainModule()
         {
             Get["/"] = ListRoutes;
         }
@@ -18,6 +17,7 @@ namespace Bastet.HttpServer.Modules
             return new
             {
                 devices = root + DevicesModule.PATH,
+                sensors = root + SensorsModule.PATH
             };
         }
     }
