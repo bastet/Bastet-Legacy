@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Data;
 using MoreLinq;
-using NHibernate;
-using NHibernate.Context;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Ninject;
 using Nancy.Serialization.JsonNet;
 using Newtonsoft.Json;
 using Ninject;
+using ServiceStack.Data;
+using ServiceStack.OrmLite;
 
 namespace Bastet.HttpServer
 {
@@ -64,6 +64,14 @@ namespace Bastet.HttpServer
             Nancy.Json.JsonSettings.MaxJsonLength = int.MaxValue;
 
             base.ApplicationStartup(container, pipelines);
+        }
+
+        protected override void ConfigureRequestContainer(IKernel container, NancyContext context)
+        {
+            base.ConfigureRequestContainer(container, context);
+
+            var factory = container.Get<IDbConnectionFactory>();
+            container.Bind<IDbConnection>().ToMethod(c => factory.Open()).InSingletonScope();
         }
     }
 }

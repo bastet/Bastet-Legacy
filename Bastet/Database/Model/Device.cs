@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
 {
@@ -7,11 +7,12 @@ namespace Bastet.Database.Model
         /// <summary>
         /// The unique ID of this device
         /// </summary>
-        public virtual Guid Id { get; set; }
+        [AutoIncrement]
+        public long Id { get; set; }
 
         /// <summary>
         /// The URL to speakto this device (using CoAP)
         /// </summary>
-        public virtual string Url { get; set; }
+        public string Url { get; set; }
     }
 }

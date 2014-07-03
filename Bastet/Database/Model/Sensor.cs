@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bastet.HttpServer.Modules;
+using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
 {
@@ -7,11 +8,12 @@ namespace Bastet.Database.Model
         /// <summary>
         /// The unique ID of this reading
         /// </summary>
-        public virtual Guid Id { get; set; }
+        [AutoIncrement]
+        public long Id { get; set; }
 
         /// <summary>
         /// The device this sensor is attached to
         /// </summary>
-        public virtual Device Device { get; set; }
+        public long DeviceId { get; set; }
     }
 }

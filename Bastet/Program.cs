@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Data;
 using CommandLine;
 using CommandLine.Text;
-using NHibernate;
 using Ninject;
+using ServiceStack.Data;
+using ServiceStack.OrmLite;
 
 namespace Bastet
 {
@@ -18,8 +20,7 @@ namespace Bastet
 
             _db = new Database.Database(options.CleanDatabase);
             _kernel.Bind<Database.Database>().ToConstant(_db);
-            _kernel.Bind<ISessionFactory>().ToMethod(c => _db.SessionFactory);
-            _kernel.Bind<ISession>().ToMethod(c => _db.SessionFactory.OpenSession());
+            _kernel.Bind<IDbConnectionFactory>().ToMethod(c => _db.ConnectionFactory);
 
             _server = new HttpServer.HttpServer(options.HttpPort);
             _kernel.Bind<HttpServer.HttpServer>().ToConstant(_server);

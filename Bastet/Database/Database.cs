@@ -1,7 +1,10 @@
-﻿using Common.Logging;
-using NHibernate;
-using NHibernate.Cfg;
-using NHibernate.Tool.hbm2ddl;
+﻿using System;
+using System.Data;
+using System.Data.Linq;
+using Bastet.Database.Model;
+using Common.Logging;
+using ServiceStack.Data;
+using ServiceStack.OrmLite;
 
 namespace Bastet.Database
 {
@@ -9,10 +12,10 @@ namespace Bastet.Database
     {
         private static readonly ILog _logger = LogManager.GetCurrentClassLogger();
 
-        private readonly ISessionFactory _sessionFactory;
-        public ISessionFactory SessionFactory
+        private readonly IDbConnectionFactory _connectionFactory;
+        public IDbConnectionFactory ConnectionFactory
         {
-            get { return _sessionFactory; }
+            get { return _connectionFactory; }
         }
 
         /// <summary>
@@ -23,25 +26,27 @@ namespace Bastet.Database
         {
             _logger.Info("Creating database");
 
-            // Initialize NHibernate
-            var cfg = new Configuration();
-            cfg.Configure();
-            cfg.AddAssembly(typeof(Database).Assembly);
-
-            if (clean)
+            _connectionFactory = new OrmLiteConnectionFactory("Data Source=bastet.sqlite;Version=3;New=True;", SqliteDialect.Provider);
+            using (IDbConnection db = _connectionFactory.Open())
             {
-                _logger.Info("Cleaning database");
-                var s = new SchemaExport(cfg);
-                s.Create(false, true);
-            }
-            else
-            {
-                var s = new SchemaUpdate(cfg);
-                s.Execute(false, true);
-            }
+                Type[] models = new Type[]
+                {
+                    typeof(Device),
+                    //typeof(Reading),
+                    typeof(Sensor)
+                };
 
-            // Get ourselves an NHibernate Session factory
-            _sessionFactory = cfg.BuildSessionFactory();
+                if (clean)
+                {
+                    foreach (var model in models)
+                        db.CreateTable(true, model);
+                }
+                else
+                {
+                    foreach (var model in models)
+                        db.CreateTableIfNotExists(model);
+                }
+            }
         }
     }
 }

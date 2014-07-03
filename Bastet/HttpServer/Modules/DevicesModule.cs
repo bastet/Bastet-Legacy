@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Text;
 using Bastet.Database.Model;
 using Nancy;
 using Nancy.ModelBinding;
+using ServiceStack.OrmLite;
 
 namespace Bastet.HttpServer.Modules
 {
@@ -13,18 +13,30 @@ namespace Bastet.HttpServer.Modules
     {
         public const string PATH = "/devices";
 
-        private readonly Database.Database _db;
+        private readonly IDbConnection _connection;
 
-        public DevicesModule(Database.Database db)
+        public DevicesModule(IDbConnection connection)
             :base(PATH)
         {
-            _db = db;
+            _connection = connection;
 
             Get["/"] = ListDevices;
             Post["/"] = CreateDevice;
 
             Get["/{id}"] = DeviceDetails;
             Delete["/{id}"] = DeleteDevice;
+        }
+
+        private object SerializeDevice(Device device)
+        {
+            if (device == null)
+                return null;
+
+            return new
+            {
+                Id = device.Id,
+                Url = device.Url
+            };
         }
 
         /// <summary>
@@ -34,24 +46,19 @@ namespace Bastet.HttpServer.Modules
         /// <returns></returns>
         private dynamic ListDevices(dynamic parameters)
         {
-            using (var session = _db.SessionFactory.OpenSession())
-            {
-                var url = Request.Url;
-                return session
-                    .QueryOver<Device>()
-                    .List()
-                    .Select(a => url + "/" + a.Id);
-            }
+            var url = Request.Url;
+            return _connection
+                .Select<Device>()
+                .Select(d => url + "/" + d.Id)
+                .ToArray();
         }
 
         private dynamic CreateDevice(dynamic parameters)
         {
             var device = this.Bind<Device>("Id");
+            _connection.Save(device);
 
-            using (var session = _db.SessionFactory.OpenSession())
-                session.Save(device);
-
-            return device;
+            return SerializeDevice(device);
         }
 
         /// <summary>
@@ -61,23 +68,12 @@ namespace Bastet.HttpServer.Modules
         /// <returns></returns>
         private dynamic DeviceDetails(dynamic parameters)
         {
-            using (var session = _db.SessionFactory.OpenSession())
-            {
-                Guid id;
-                if (!Guid.TryParse((string) parameters.id, out id))
-                {
-                    return Negotiate
-                        .WithModel(new { Error = "Cannot parse GUID" })
-                        .WithStatusCode(HttpStatusCode.BadRequest);
-                }
-
-                return (dynamic)session.Get<Device>(id) ?? HttpStatusCode.NotFound;
-            }
+            return SerializeDevice(_connection.SingleById<Device>((int)parameters.id)) ?? HttpStatusCode.NotFound;
         }
 
         private dynamic DeleteDevice(dynamic parameters)
         {
-            return ModuleHelpers.Delete<Device>(_db, Negotiate, (string)parameters.id);
+            return SerializeDevice(ModuleHelpers.Delete<Device>(_connection, (int)parameters.id)) ?? HttpStatusCode.NoContent;
         }
     }
 }

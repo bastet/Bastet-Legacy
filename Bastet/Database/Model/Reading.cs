@@ -1,4 +1,5 @@
 ﻿using System;
+using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
 {
@@ -7,16 +8,17 @@ namespace Bastet.Database.Model
         /// <summary>
         /// The unique ID of this reading
         /// </summary>
-        public virtual Guid Id { get; set; }
+        [AutoIncrement]
+        public long Id { get; set; }
 
         /// <summary>
         /// The timestamp of this reading
         /// </summary>
-        public virtual DateTime Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// The sensor which took this reading
         /// </summary>
-        public virtual Sensor Sensor { get; set; }
+        public long SensorId { get; set; }
     }
 }
