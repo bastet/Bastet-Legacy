@@ -32,7 +32,7 @@ namespace Bastet.Database
                 Type[] models = new Type[]
                 {
                     typeof(Device),
-                    //typeof(Reading),
+                    typeof(Reading),
                     typeof(Sensor)
                 };
 
