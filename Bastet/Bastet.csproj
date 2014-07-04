@@ -102,6 +102,7 @@
     <Compile Include="Database\Model\Device.cs" />
     <Compile Include="Database\Model\Reading.cs" />
     <Compile Include="Database\Model\Sensor.cs" />
+    <Compile Include="HttpServer\Modules\DeviceProxying.cs" />
     <Compile Include="HttpServer\Modules\ReadingsModule.cs" />
     <Compile Include="HttpServer\Modules\SensorsModule.cs" />
     <Compile Include="HttpServer\Modules\DevicesModule.cs" />
@@ -118,7 +119,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
