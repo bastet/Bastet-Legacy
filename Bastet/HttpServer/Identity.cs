@@ -12,8 +12,7 @@ namespace Bastet.HttpServer
     {
         public string UserName
         {
-            get;
-            private set;
+            get { return User.Username; }
         }
 
         public IEnumerable<string> Claims
@@ -31,7 +30,6 @@ namespace Bastet.HttpServer
             Session = session;
 
             Claims = claims.Select(c => c.Name).ToArray();
-            UserName = user.Nick;
         }
 
         public static IEnumerable<Claim> GetClaims(User user, IDbConnection connection)

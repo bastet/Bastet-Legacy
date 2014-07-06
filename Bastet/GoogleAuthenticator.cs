@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
@@ -100,10 +101,8 @@ namespace Bastet
 
                 var builder = new StringBuilder();
 
-                for (var i = 0; i < value.Length; i++)
+                foreach (var symbol in value)
                 {
-                    var symbol = value[i];
-
                     if (urlEncodeAlphabet.IndexOf(symbol) != -1)
                     {
                         builder.Append(symbol);
@@ -121,16 +120,16 @@ namespace Bastet
             /// <summary>
             ///   Base-32 Encoding
             /// </summary>
-            public static string Base32Encode(byte[] data)
+            public static string Base32Encode(IList<byte> data)
             {
                 const int inByteSize = 8;
                 const int outByteSize = 5;
                 const string base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-                var builder = new StringBuilder((data.Length + 7) * inByteSize / outByteSize);
+                var builder = new StringBuilder((data.Count + 7) * inByteSize / outByteSize);
 
                 int i = 0, index = 0;
-                while (i < data.Length)
+                while (i < data.Count)
                 {
                     int currentByte = data[i];
                     int digit;
@@ -138,7 +137,7 @@ namespace Bastet
                     //Is the current digit going to span a byte boundary?
                     if (index > (inByteSize - outByteSize))
                     {
-                        int nextByte = (i + 1) < data.Length ? data[i + 1] : 0;
+                        int nextByte = (i + 1) < data.Count ? data[i + 1] : 0;
 
                         digit = currentByte & (0xFF >> index);
                         index = (index + outByteSize) % inByteSize;

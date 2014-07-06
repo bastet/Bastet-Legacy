@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Linq;
 using Bastet.Database.Model;
 using MoreLinq;
 using Nancy;
@@ -24,10 +23,7 @@ namespace Bastet.HttpServer
         {
             get
             {
-                return NancyInternalConfiguration.WithOverrides(x =>
-                {
-                    x.Serializers.Insert(0, typeof(JsonNetSerializer));
-                });
+                return NancyInternalConfiguration.WithOverrides(x => x.Serializers.Insert(0, typeof(JsonNetSerializer)));
             }
         }
 

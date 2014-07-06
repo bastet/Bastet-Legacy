@@ -11,12 +11,9 @@ namespace Bastet.Database.Model
         /// The unique ID of this user
         /// </summary>
         [AutoIncrement]
+// ReSharper disable UnusedAutoPropertyAccessor.Global
         public long Id { get; set; }
-
-        /// <summary>
-        /// The nickname to use when addressing this user
-        /// </summary>
-        public string Nick { get; set; }
+// ReSharper restore UnusedAutoPropertyAccessor.Global
 
         /// <summary>
         /// The username for logging in
@@ -26,7 +23,7 @@ namespace Bastet.Database.Model
         /// <summary>
         /// The password salt for this user
         /// </summary>
-        public long Salt { get; set; }
+        private long Salt { get; set; }
 
         /// <summary>
         /// The salted and hashed password of this user
@@ -36,9 +33,8 @@ namespace Bastet.Database.Model
         public User(string name, string password)
         {
             Username = name;
-            Nick = name;
 
-            Salt = Extensions.GenerateSecureRandomNumber();
+            Salt = SecurityHelpers.GenerateSecureRandomNumber();
             PasswordHash = ComputeSaltedHash(password);
         }
 

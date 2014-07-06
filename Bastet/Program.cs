@@ -1,4 +1,5 @@
 ﻿using System;
+using Bastet.HttpServer;
 using CommandLine;
 using CommandLine.Text;
 using Ninject;
@@ -12,7 +13,7 @@ namespace Bastet
         private readonly HttpServer.HttpServer _server;
         private readonly IKernel _kernel;
 
-        public Program(Options options)
+        private Program(Options options)
         {
             _kernel = new StandardKernel();
 
@@ -24,7 +25,7 @@ namespace Bastet
             _kernel.Bind<HttpServer.HttpServer>().ToConstant(_server);
         }
 
-        public void Run()
+        private void Run()
         {
             _server.Start(_kernel);
 
@@ -59,7 +60,9 @@ namespace Bastet
 // ReSharper restore UnusedAutoPropertyAccessor.Global
 
         [Option('a', "admin", Required = false, HelpText = "The username of the admin user (only applied in conjunction with --clean)")]
+// ReSharper disable UnusedAutoPropertyAccessor.Global
         public string AdminUsername { get; set; }
+// ReSharper restore UnusedAutoPropertyAccessor.Global
 
         [HelpOption]
         public string GetUsage()

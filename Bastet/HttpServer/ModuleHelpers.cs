@@ -1,11 +1,14 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
+using System.IO;
+using Nancy;
 using ServiceStack.OrmLite;
 
 namespace Bastet.HttpServer
 {
     internal static class ModuleHelpers
     {
-        public static T Delete<T>(IDbConnection connection, int id)
+        public static T Delete<T>(IDbConnection connection, long id)
             where T : class
         {
             var dbItem = connection.SingleById<T>(id);
@@ -20,6 +23,16 @@ namespace Bastet.HttpServer
             }
 
             return dbItem;
+        }
+
+        public static string CreateUrl(Request request, params string[] parts)
+        {
+            var url = new Url(new Uri(new Uri(request.Url.SiteBase), Path.Combine(parts)).ToString());
+
+            if (request.Query.sessionkey.HasValue)
+                url.Query = "sessionkey=" + (string)request.Query.sessionkey;
+
+            return url.ToString();
         }
     }
 }

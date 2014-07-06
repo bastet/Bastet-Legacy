@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Data.Linq;
 using Bastet.Database.Model;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
@@ -19,6 +18,7 @@ namespace Bastet.Database
         /// Set to true to recreate the database (losing all data)
         /// </summary>
         /// <param name="clean"></param>
+        /// <param name="adminUsername"></param>
         public Database(bool clean = false, string adminUsername = null)
         {
             _connectionFactory = new OrmLiteConnectionFactory("Data Source=bastet.sqlite;Version=3;New=True;", SqliteDialect.Provider);

@@ -119,7 +119,7 @@ namespace Bastet.HttpServer.Modules
                 }
             }
 
-            public System.IO.Stream InputStream
+            public Stream InputStream
             {
                 get { return _request.Body; }
             }

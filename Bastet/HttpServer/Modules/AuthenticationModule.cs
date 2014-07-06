@@ -79,7 +79,7 @@ namespace Bastet.HttpServer.Modules
                 var u = Context.CurrentUser;
                 return new
                 {
-                    User = Request.Url.SiteBase + UsersModule.PATH + "/" + Uri.EscapeUriString(u.UserName),
+                    User = ModuleHelpers.CreateUrl(Request, UsersModule.PATH, Uri.EscapeUriString(u.UserName)),
                     Claims = u.Claims.ToArray()
                 };
             });
@@ -91,11 +91,9 @@ namespace Bastet.HttpServer.Modules
             {
                 this.RequiresAuthentication();
 
-                var u = (Identity)Context.CurrentUser;
-                if (u != null && u.Session != null)
-                    _connection.Delete(u.Session);
+                ModuleHelpers.Delete<Session>(_connection, ((Identity)Context.CurrentUser).Session.Id);
 
-                return HttpStatusCode.OK;
+                return HttpStatusCode.NoContent;
             });
         }
 

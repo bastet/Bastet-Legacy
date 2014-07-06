@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Bastet
 {
-    public static class Extensions
+    public static class SecurityHelpers
     {
         public static bool SlowEquals(this string a, string b)
         {

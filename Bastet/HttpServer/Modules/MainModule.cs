@@ -18,8 +18,9 @@ namespace Bastet.HttpServer.Modules
 
             return new
             {
-                Devices = Request.Url.SiteBase + DevicesModule.PATH,
-                Authentication = url.SiteBase + AuthenticationModule.PATH
+                Devices = ModuleHelpers.CreateUrl(Request, DevicesModule.PATH),
+                Authentication = ModuleHelpers.CreateUrl(Request, AuthenticationModule.PATH),
+                Users = ModuleHelpers.CreateUrl(Request, UsersModule.PATH)
             };
         }
     }

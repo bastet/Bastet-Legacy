@@ -14,7 +14,7 @@ namespace Bastet.HttpServer
             FloatParseHandling = FloatParseHandling.Double;
 
             TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
-            TypeNameHandling = TypeNameHandling.Auto;
+            TypeNameHandling = TypeNameHandling.None;
 
             Binder = new CustomSerializationBinder();
         }

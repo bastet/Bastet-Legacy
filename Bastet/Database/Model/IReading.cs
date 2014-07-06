@@ -2,7 +2,7 @@
 
 namespace Bastet.Database.Model
 {
-    public interface IReading<T>
+    public interface IReading<out T>
     {
         long Id { get; }
 

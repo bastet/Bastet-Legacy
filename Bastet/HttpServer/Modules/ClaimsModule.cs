@@ -29,7 +29,7 @@ namespace Bastet.HttpServer.Modules
             Delete["/", runAsync: true] = DeleteClaim;
         }
 
-        private dynamic SerializeClaim(Claim claim)
+        private static dynamic SerializeClaim(Claim claim)
         {
             return claim.Name;
         }

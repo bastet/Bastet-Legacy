@@ -34,9 +34,8 @@ namespace Bastet.HttpServer.Modules
         {
             return new
             {
-                Nick = user.Nick,
                 Username = user.Username,
-                Claims = Request.Url.SiteBase + ClaimsModule.PATH.Replace("{username}", Uri.EscapeUriString(user.Username))
+                Claims = ModuleHelpers.CreateUrl(Request, ClaimsModule.PATH.Replace("{username}", Uri.EscapeUriString(user.Username)))
             };
         }
 

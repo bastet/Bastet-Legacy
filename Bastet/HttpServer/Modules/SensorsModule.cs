@@ -37,7 +37,7 @@ namespace Bastet.HttpServer.Modules
             {
                 Id = sensor.Id,
                 Device = Request.Url.SiteBase + DevicesModule.PATH + "/" + sensor.DeviceId,
-                Readings = (Request.Url.SiteBase + ReadingsModule.PATH)
+                Readings = ModuleHelpers.CreateUrl(Request, ReadingsModule.PATH)
                     .Replace("{sensorid}", sensor.Id.ToString(CultureInfo.InvariantCulture))
                     .Replace("{deviceid}", sensor.DeviceId.ToString(CultureInfo.InvariantCulture))
             };

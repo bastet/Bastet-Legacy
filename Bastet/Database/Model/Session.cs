@@ -10,7 +10,9 @@ namespace Bastet.Database.Model
         /// The unique ID of this device
         /// </summary>
         [AutoIncrement]
+// ReSharper disable UnusedAutoPropertyAccessor.Global
         public long Id { get; set; }
+// ReSharper restore UnusedAutoPropertyAccessor.Global
 
         /// <summary>
         /// The API key of this session

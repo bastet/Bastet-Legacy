@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using Bastet.Database.Model;
 using Nancy;
 using Nancy.ModelBinding;
-using Nancy.Security;
 using ServiceStack.OrmLite;
 
 namespace Bastet.HttpServer.Modules
@@ -44,7 +44,7 @@ namespace Bastet.HttpServer.Modules
             {
                 Id = reading.Id,
                 Timestamp = reading.Timestamp,
-                Sensor = Request.Url.SiteBase + SensorsModule.PATH + "/" + reading.SensorId,
+                Sensor = ModuleHelpers.CreateUrl(Request, SensorsModule.PATH, reading.SensorId.ToString(CultureInfo.InvariantCulture)),
                 Value = reading.Value
             };
         }

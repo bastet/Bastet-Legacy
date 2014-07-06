@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using Bastet.Database.Model;
 using Nancy;
@@ -30,7 +31,7 @@ namespace Bastet.HttpServer.Modules
             Delete["/{id}"] = DeleteDevice;
         }
 
-        private static object SerializeDevice(Url url, Device device)
+        private object SerializeDevice(Device device)
         {
             if (device == null)
                 return null;
@@ -39,8 +40,8 @@ namespace Bastet.HttpServer.Modules
             {
                 Id = device.Id,
                 Url = device.Url,
-                Proxy = new Uri(new Uri(url.SiteBase), String.Format("devices/{0}/proxy", device.Id)),
-                Resources = new Uri(new Uri(url.SiteBase), String.Format("devices/{0}/proxy/.well-known/core", device.Id))
+                Proxy = ModuleHelpers.CreateUrl(Request, DevicesProxyModule.PATH.Replace("{id}", device.Id.ToString(CultureInfo.InvariantCulture))),
+                Resources = ModuleHelpers.CreateUrl(Request, DevicesProxyModule.PATH.Replace("{id}", device.Id.ToString(CultureInfo.InvariantCulture)), ".well-known/core")
             };
         }
 
@@ -56,7 +57,7 @@ namespace Bastet.HttpServer.Modules
 
             return _connection
                 .Select<Device>()
-                .Select(d => Request.Url.SiteBase + PATH + "/" + d.Id)
+                .Select(d => ModuleHelpers.CreateUrl(Request, PATH, d.Id.ToString(CultureInfo.InvariantCulture)))
                 .ToArray();
         }
 
@@ -68,7 +69,7 @@ namespace Bastet.HttpServer.Modules
             var device = this.Bind<Device>("Id");
             _connection.Save(device);
 
-            return SerializeDevice(Request.Url, device);
+            return SerializeDevice(device);
         }
 
         /// <summary>
@@ -81,7 +82,7 @@ namespace Bastet.HttpServer.Modules
             this.RequiresAuthentication();
             this.RequiresAnyClaim(new[] { "device-details-all", string.Format("device-details-{0}", (int)parameters.id) });
 
-            return SerializeDevice(Request.Url, _connection.SingleById<Device>((int)parameters.id)) ?? HttpStatusCode.NotFound;
+            return SerializeDevice(_connection.SingleById<Device>((int)parameters.id)) ?? HttpStatusCode.NotFound;
         }
 
         private dynamic DeleteDevice(dynamic parameters)
@@ -89,7 +90,7 @@ namespace Bastet.HttpServer.Modules
             this.RequiresAuthentication();
             this.RequiresAnyClaim(new[] { "device-delete-all", string.Format("device-delete-{0}", (int)parameters.id) });
 
-            return SerializeDevice(Request.Url, ModuleHelpers.Delete<Device>(_connection, (int)parameters.id)) ?? HttpStatusCode.NoContent;
+            return SerializeDevice(ModuleHelpers.Delete<Device>(_connection, (int)parameters.id)) ?? HttpStatusCode.NoContent;
         }
     }
 }
