@@ -4,6 +4,7 @@ using System.Linq;
 using Bastet.Database.Model;
 using Nancy;
 using Nancy.ModelBinding;
+using Nancy.Security;
 using ServiceStack.OrmLite;
 
 namespace Bastet.HttpServer.Modules
@@ -19,6 +20,8 @@ namespace Bastet.HttpServer.Modules
             :base(PATH)
         {
             _connection = connection;
+
+            //this.RequiresHttps();
 
             Get["/"] = ListAllReadings;
 

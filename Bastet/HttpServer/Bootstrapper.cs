@@ -69,9 +69,6 @@ namespace Bastet.HttpServer
         {
             Nancy.Json.JsonSettings.MaxJsonLength = int.MaxValue;
 
-            // Token sent in the Header, like: "Authorization: Token", will log this request in
-            //TokenAuthentication.Enable(pipelines, new TokenAuthenticationConfiguration(container.Get<ITokenizer>()));
-
             base.ApplicationStartup(container, pipelines);
         }
 
@@ -86,7 +83,6 @@ namespace Bastet.HttpServer
 
                 string key = (string)ctx.Request.Query.sessionkey;
                 var session = connection.SingleWhere<Session>("SessionKey", key);
-                    //.Select<Session>(s => s.SessionKey == key).SingleOrDefault();
                 if (session == null)
                     return null;
                 var user = connection.SingleById<User>(session.UserId);

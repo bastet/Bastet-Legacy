@@ -19,5 +19,11 @@ namespace Bastet.Database.Model
         /// The name of the claim
         /// </summary>
         public string Name { get; set; }
+
+        public Claim(User user, string claimName)
+        {
+            UserId = user.Id;
+            Name = claimName;
+        }
     }
 }

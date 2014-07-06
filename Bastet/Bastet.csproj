@@ -138,6 +138,7 @@
     <Compile Include="Database\Model\IReading.cs" />
     <Compile Include="Database\Model\Sensor.cs" />
     <Compile Include="HttpServer\Modules\AuthenticationModule.cs" />
+    <Compile Include="HttpServer\Modules\ClaimsModule.cs" />
     <Compile Include="HttpServer\Modules\DeviceProxying.cs" />
     <Compile Include="HttpServer\Modules\ReadingsModule.cs" />
     <Compile Include="HttpServer\Modules\SensorsModule.cs" />

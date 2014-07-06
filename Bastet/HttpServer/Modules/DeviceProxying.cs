@@ -24,12 +24,13 @@ namespace Bastet.HttpServer.Modules
         public const string PATH = "/devices/{id}/proxy";
 
         private readonly IDbConnection _connection;
-        //private HttpTranslator
 
         public DevicesProxyModule(IDbConnection connection)
             : base(PATH)
         {
             _connection = connection;
+
+            //this.RequiresHttps();
 
             Get["/", runAsync: true] = Get["/{endpoint*}", runAsync: true] = Proxy;
             Put["/", runAsync: true] = Put["/{endpoint*}", runAsync: true] = Proxy;

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bastet.Database.Model;
@@ -28,6 +26,8 @@ namespace Bastet.HttpServer.Modules
 
             Get["/", runAsync: true] = ListUsers;
             Post["/", runAsync: true] = CreateUser;
+
+            Get["/{username}", runAsync: true] = GetUserDetails;
         }
 
         private object SerializeUser(User user)
@@ -35,7 +35,8 @@ namespace Bastet.HttpServer.Modules
             return new
             {
                 Nick = user.Nick,
-                Username = user.Username
+                Username = user.Username,
+                Claims = Request.Url.SiteBase + ClaimsModule.PATH.Replace("{username}", Uri.EscapeUriString(user.Username))
             };
         }
 
@@ -46,7 +47,10 @@ namespace Bastet.HttpServer.Modules
                 this.RequiresAuthentication();
                 this.RequiresClaims(new[] {"list-users"});
 
-                throw new NotImplementedException();
+                return _connection
+                    .Select<User>()
+                    .Select(d => Request.Url.SiteBase + PATH + "/" + Uri.EscapeUriString(d.Username))
+                    .ToArray();
             });
         }
 
@@ -78,6 +82,23 @@ namespace Bastet.HttpServer.Modules
                     //Return the user
                     return SerializeUser(user);
                 }
+            });
+        }
+
+        private Task<dynamic> GetUserDetails(dynamic parameters, CancellationToken ct)
+        {
+            return Task<dynamic>.Factory.StartNew(() =>
+            {
+                var username = (string)parameters.username;
+                var user = _connection.SingleWhere<User>("Username", username);
+                if (user == null)
+                {
+                    return Negotiate
+                        .WithModel(new { Error = "No Such User Exists" })
+                        .WithStatusCode(HttpStatusCode.NotFound);
+                }
+
+                return SerializeUser(user);
             });
         }
     }

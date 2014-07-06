@@ -22,6 +22,8 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
+            //this.RequiresHttps();
+
             Get["/", runAsync: true] = GetAuth;
             Post["/", runAsync: true] = PostAuth;
             Delete["/", runAsync: true] = DeleteAuth;
@@ -77,7 +79,7 @@ namespace Bastet.HttpServer.Modules
                 var u = Context.CurrentUser;
                 return new
                 {
-                    UserName = u.UserName,
+                    User = Request.Url.SiteBase + UsersModule.PATH + "/" + Uri.EscapeUriString(u.UserName),
                     Claims = u.Claims.ToArray()
                 };
             });

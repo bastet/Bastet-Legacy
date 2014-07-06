@@ -12,10 +12,14 @@ namespace Bastet.HttpServer.Modules
 
         private dynamic ListRoutes(dynamic parameters)
         {
+            var url = Request.Url;
+            //TODO:: Once https is working comment this in!
+            //url.Scheme = "https";
+
             return new
             {
                 Devices = Request.Url.SiteBase + DevicesModule.PATH,
-                Authentication = Request.Url.SiteBase + AuthenticationModule.PATH
+                Authentication = url.SiteBase + AuthenticationModule.PATH
             };
         }
     }
