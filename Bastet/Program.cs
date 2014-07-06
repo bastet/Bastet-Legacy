@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Data;
 using CommandLine;
 using CommandLine.Text;
 using Ninject;
 using ServiceStack.Data;
-using ServiceStack.OrmLite;
 
 namespace Bastet
 {

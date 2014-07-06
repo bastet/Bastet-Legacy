@@ -52,6 +52,9 @@
     <Reference Include="Nancy">
       <HintPath>..\packages\Nancy.0.23.0\lib\net40\Nancy.dll</HintPath>
     </Reference>
+    <Reference Include="Nancy.Authentication.Stateless">
+      <HintPath>..\packages\Nancy.Authentication.Stateless.0.23.0\lib\net40\Nancy.Authentication.Stateless.dll</HintPath>
+    </Reference>
     <Reference Include="Nancy.Bootstrappers.Ninject">
       <HintPath>..\packages\Nancy.Bootstrappers.Ninject.0.23.0\lib\net40\Nancy.Bootstrappers.Ninject.dll</HintPath>
     </Reference>
@@ -119,22 +122,28 @@
   <ItemGroup>
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\Model\BlobReading.cs" />
+    <Compile Include="Database\Model\Claim.cs" />
     <Compile Include="Database\Model\DecimalReading.cs" />
+    <Compile Include="Database\Model\Session.cs" />
     <Compile Include="Database\Model\StringReading.cs" />
     <Compile Include="Database\Model\User.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="GoogleAuthenticator.cs" />
     <Compile Include="HttpServer\Bootstrapper.cs" />
     <Compile Include="HttpServer\CustomJsonSerializer.cs" />
+    <Compile Include="HttpServer\Identity.cs" />
     <Compile Include="HttpServer\ModuleHelpers.cs" />
     <Compile Include="HttpServer\HttpServer.cs" />
     <Compile Include="Database\Model\Device.cs" />
     <Compile Include="Database\Model\IReading.cs" />
     <Compile Include="Database\Model\Sensor.cs" />
+    <Compile Include="HttpServer\Modules\AuthenticationModule.cs" />
     <Compile Include="HttpServer\Modules\DeviceProxying.cs" />
     <Compile Include="HttpServer\Modules\ReadingsModule.cs" />
     <Compile Include="HttpServer\Modules\SensorsModule.cs" />
     <Compile Include="HttpServer\Modules\DevicesModule.cs" />
     <Compile Include="HttpServer\Modules\MainModule.cs" />
+    <Compile Include="HttpServer\Modules\UsersModule.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Concat.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Prepend.cs" />
     <Compile Include="Program.cs" />

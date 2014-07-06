@@ -20,7 +20,7 @@ namespace Bastet.HttpServer
             var uri = new Uri("http://localhost:" + _httpPort);
             var config = new HostConfiguration
             {
-                RewriteLocalhost = false,
+                RewriteLocalhost = false
             };
 
             var bootstrapper = new Bootstrapper(kernel);

@@ -12,6 +12,7 @@ using CoAP;
 using CoAP.Http;
 using CoAP.Proxy;
 using Nancy;
+using Nancy.Security;
 using ServiceStack.OrmLite;
 using Request = Nancy.Request;
 
@@ -40,6 +41,9 @@ namespace Bastet.HttpServer.Modules
         {
             return Task<dynamic>.Factory.StartNew(() =>
             {
+                this.RequiresAuthentication();
+                this.RequiresAnyClaim(new[] { "device-proxy-all", string.Format("device-proxy-{0}", (int)parameters.id) });
+
                 var device = _connection.SingleById<Device>((int) parameters.id);
                 if (device == null)
                     return Negotiate

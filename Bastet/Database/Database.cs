@@ -30,7 +30,11 @@ namespace Bastet.Database
                     typeof(Sensor),
                     typeof(StringReading),
                     typeof(DecimalReading),
-                    typeof(BlobReading)
+                    typeof(BlobReading),
+
+                    typeof(User),
+                    typeof(Session),
+                    typeof(Claim)
                 };
 
                 if (clean)

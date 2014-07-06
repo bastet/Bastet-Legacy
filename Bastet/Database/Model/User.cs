@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Security;
+﻿using System;
 using System.Security.Cryptography;
 using System.Text;
 using ServiceStack.DataAnnotations;
@@ -35,17 +33,13 @@ namespace Bastet.Database.Model
         /// </summary>
         public string PasswordHash { get; set; }
 
-        /// <summary>
-        /// Generate a new random salt value
-        /// </summary>
-        /// <returns></returns>
-        public static long GenerateSalt()
+        public User(string name, string password)
         {
-            byte[] saltBytes = new byte[8];
-            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
-                rng.GetBytes(saltBytes);
+            Username = name;
+            Nick = name;
 
-            return BitConverter.ToInt64(saltBytes, 0);
+            Salt = Extensions.GenerateSecureRandomNumber();
+            PasswordHash = ComputeSaltedHash(password);
         }
 
         /// <summary>

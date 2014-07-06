@@ -14,8 +14,8 @@ namespace Bastet.HttpServer.Modules
         {
             return new
             {
-                devices = Request.Url.SiteBase + DevicesModule.PATH,
-                sensors = Request.Url.SiteBase + SensorsModule.PATH
+                Devices = Request.Url.SiteBase + DevicesModule.PATH,
+                Authentication = Request.Url.SiteBase + AuthenticationModule.PATH
             };
         }
     }

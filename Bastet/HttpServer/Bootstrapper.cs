@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
+using Bastet.Database.Model;
 using MoreLinq;
 using Nancy;
+using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Ninject;
 using Nancy.Serialization.JsonNet;
@@ -66,7 +69,32 @@ namespace Bastet.HttpServer
         {
             Nancy.Json.JsonSettings.MaxJsonLength = int.MaxValue;
 
+            // Token sent in the Header, like: "Authorization: Token", will log this request in
+            //TokenAuthentication.Enable(pipelines, new TokenAuthenticationConfiguration(container.Get<ITokenizer>()));
+
             base.ApplicationStartup(container, pipelines);
+        }
+
+        protected override void RequestStartup(IKernel container, IPipelines pipelines, NancyContext context)
+        {
+            StatelessAuthentication.Enable(pipelines, new StatelessAuthenticationConfiguration(ctx =>
+            {
+                if (!ctx.Request.Query.sessionkey.HasValue)
+                    return null;
+
+                var connection = container.Get<IDbConnection>();
+
+                string key = (string)ctx.Request.Query.sessionkey;
+                var session = connection.SingleWhere<Session>("SessionKey", key);
+                    //.Select<Session>(s => s.SessionKey == key).SingleOrDefault();
+                if (session == null)
+                    return null;
+                var user = connection.SingleById<User>(session.UserId);
+                if (user == null)
+                    return null;
+
+                return new Identity(Identity.GetClaims(user, connection), user, session);
+            }));
         }
 
         protected override void ConfigureRequestContainer(IKernel container, NancyContext context)
