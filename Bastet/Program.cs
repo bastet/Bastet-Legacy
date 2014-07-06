@@ -16,7 +16,7 @@ namespace Bastet
         {
             _kernel = new StandardKernel();
 
-            _db = new Database.Database(options.CleanDatabase);
+            _db = new Database.Database(options.CleanDatabase, options.AdminUsername);
             _kernel.Bind<Database.Database>().ToConstant(_db);
             _kernel.Bind<IDbConnectionFactory>().ToMethod(c => _db.ConnectionFactory);
 
@@ -57,6 +57,9 @@ namespace Bastet
 // ReSharper disable UnusedAutoPropertyAccessor.Global
         public ushort HttpPort { get; set; }
 // ReSharper restore UnusedAutoPropertyAccessor.Global
+
+        [Option('a', "admin", Required = false, HelpText = "The username of the admin user (only applied in conjunction with --clean)")]
+        public string AdminUsername { get; set; }
 
         [HelpOption]
         public string GetUsage()

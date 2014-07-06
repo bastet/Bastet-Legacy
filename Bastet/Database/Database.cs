@@ -19,7 +19,7 @@ namespace Bastet.Database
         /// Set to true to recreate the database (losing all data)
         /// </summary>
         /// <param name="clean"></param>
-        public Database(bool clean = false)
+        public Database(bool clean = false, string adminUsername = null)
         {
             _connectionFactory = new OrmLiteConnectionFactory("Data Source=bastet.sqlite;Version=3;New=True;", SqliteDialect.Provider);
             using (IDbConnection db = _connectionFactory.Open())
@@ -41,6 +41,24 @@ namespace Bastet.Database
                 {
                     foreach (var model in models)
                         db.CreateTable(true, model);
+
+                    if (adminUsername != null)
+                    {
+                        using (var transaction = db.OpenTransaction())
+                        {
+                            var admin = db.SingleWhere<User>("Username", adminUsername);
+                            if (admin == null)
+                                Console.WriteLine("Admin user {0} not found", adminUsername);
+                            else
+                            {
+                                var claim = db.Where<Claim>(new { UserId = admin.Id, Name = "create-claim" });
+                                if (claim == null)
+                                    db.Save<Claim>(new Claim(admin, "create-claim"));
+                            }
+
+                            transaction.Commit();
+                        }
+                    }
                 }
                 else
                 {
