@@ -11,7 +11,7 @@ namespace Bastet.HttpServer.Modules
     public class ReadingsModule
         : NancyModule
     {
-        public const string PATH = "sensors/{sensorid}/readings";
+        public const string PATH = "/devices/{deviceid}/sensors/{sensorid}/readings";
 
         private readonly IDbConnection _connection;
 
@@ -20,10 +20,19 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            Get["/"] = ListReadings;
+            Get["/"] = ListAllReadings;
+
+            Get["/strings"] = ListReadings<StringReading, string>;
+            Post["/strings"] = PostReading<StringReading, string>;
+
+            Get["/blobs"] = ListReadings<BlobReading, byte[]>;
+            Post["/blobs"] = PostReading<BlobReading, byte[]>;
+
+            Get["/decimals"] = ListReadings<DecimalReading, decimal>;
+            Post["/decimals"] = PostReading<DecimalReading, decimal>;
         }
 
-        private object SerializeReading(Reading reading)
+        private object SerializeReading<V>(IReading<V> reading)
         {
             if (reading == null)
                 return null;
@@ -31,16 +40,23 @@ namespace Bastet.HttpServer.Modules
             return new
             {
                 Id = reading.Id,
-                Url = reading.Timestamp,
+                Timestamp = reading.Timestamp,
+                Sensor = Request.Url.SiteBase + SensorsModule.PATH + "/" + reading.SensorId,
+                Value = reading.Value
             };
         }
 
-        /// <summary>
-        /// Return a list of links to devices
-        /// </summary>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        private dynamic ListReadings(dynamic parameters)
+        private dynamic ListAllReadings(dynamic parameters)
+        {
+            return new
+            {
+                strings = Request.Url + "/strings",
+                blob = Request.Url + "/blobs",
+                decimals = Request.Url + "/decimals"
+            };
+        }
+
+        private dynamic ListReadings<R, V>(dynamic parameters) where R : IReading<V>
         {
             var sensorId = (int)parameters.sensorid;
 
@@ -52,8 +68,43 @@ namespace Bastet.HttpServer.Modules
                 after = (DateTime)Request.Query.after;
 
             return _connection
-                .Select<Reading>(r => r.SensorId == sensorId && r.Timestamp < before && r.Timestamp > after)
-                .Select(SerializeReading);
+                .Select<R>(r => r.SensorId == sensorId && r.Timestamp < before && r.Timestamp > after)
+                .Cast<IReading<V>>()
+                .Select(SerializeReading<V>);
+        }
+
+        private dynamic PostReading<R, V>(dynamic parameters) where R : IReading<V>
+        {
+            var sensorId = (int)parameters.sensorid;
+
+            //Ensure this sensor actually exists
+            if (_connection.SingleById<Sensor>(sensorId) == null)
+            {
+                return Negotiate
+                    .WithModel(new {Error = string.Format("Cannot Find Sensor with Id {0}", sensorId)})
+                    .WithStatusCode(HttpStatusCode.BadRequest);
+            }
+
+            //Copy reading data from body and URL
+            R reading = this.Bind<R>("Id", "SensorId");
+            reading.SensorId = sensorId;
+
+            //Save reading in database
+            using (var transaction = _connection.OpenTransaction())
+            {
+                //Ensure this device actually exists
+                if (_connection.SingleById<Sensor>(reading.SensorId) == null)
+                {
+                    return Negotiate
+                        .WithModel(new { Error = string.Format("Cannot Find Sensor with Id {0}", reading.SensorId) })
+                        .WithStatusCode(HttpStatusCode.BadRequest);
+                }
+
+                _connection.Save(reading);
+                transaction.Commit();
+            }
+
+            return SerializeReading<V>(reading);
         }
     }
 }

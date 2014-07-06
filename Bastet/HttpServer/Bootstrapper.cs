@@ -21,7 +21,10 @@ namespace Bastet.HttpServer
         {
             get
             {
-                return NancyInternalConfiguration.WithOverrides(c => c.Serializers.Insert(0, typeof(JsonNetSerializer)));
+                return NancyInternalConfiguration.WithOverrides(x =>
+                {
+                    x.Serializers.Insert(0, typeof(JsonNetSerializer));
+                });
             }
         }
 

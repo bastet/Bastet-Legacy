@@ -3,7 +3,8 @@ using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
 {
-    public class Reading
+    public class BlobReading
+        : IReading<byte[]>
     {
         /// <summary>
         /// The unique ID of this reading
@@ -20,5 +21,10 @@ namespace Bastet.Database.Model
         /// The sensor which took this reading
         /// </summary>
         public long SensorId { get; set; }
+
+        /// <summary>
+        /// The value of this reading
+        /// </summary>
+        public byte[] Value { get; set; }
     }
 }

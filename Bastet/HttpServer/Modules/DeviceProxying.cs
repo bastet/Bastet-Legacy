@@ -1,19 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Bastet.Database.Model;
+using CoAP;
 using CoAP.Http;
 using CoAP.Proxy;
 using Nancy;
 using ServiceStack.OrmLite;
+using Request = Nancy.Request;
 
 namespace Bastet.HttpServer.Modules
 {
     public class DevicesProxyModule
         : NancyModule
     {
-        public const string PATH = "/devices/{id}";
+        public const string PATH = "/devices/{id}/proxy";
 
         private readonly IDbConnection _connection;
         //private HttpTranslator
@@ -23,38 +30,45 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            Get["/{endpoint*}"] = ProxyGet;
-            Put["/{endpoint*}"] = ProxyPut;
-            Post["/{endpoint*}"] = ProxyPost;
-            Delete["/{endpoint*}"] = ProxyDelete;
+            Get["/", runAsync: true] = Get["/{endpoint*}", runAsync: true] = Proxy;
+            Put["/", runAsync: true] = Put["/{endpoint*}", runAsync: true] = Proxy;
+            Post["/", runAsync: true] = Post["/{endpoint*}", runAsync: true] = Proxy;
+            Delete["/", runAsync: true] = Delete["/{endpoint*}", runAsync: true] = Proxy;
         }
 
-        private dynamic ProxyGet(dynamic parameters)
+        private Task<dynamic> Proxy(dynamic parameters, CancellationToken ct)
         {
-            var device = _connection.SingleById<Device>((int)parameters.id);
-            if (device == null)
-                return Negotiate
-                    .WithStatusCode(HttpStatusCode.NotFound)
-                    .WithModel(new { Error = string.Format("Unknown Device ID ({0})", parameters.id) });
+            return Task<dynamic>.Factory.StartNew(() =>
+            {
+                var device = _connection.SingleById<Device>((int) parameters.id);
+                if (device == null)
+                    return Negotiate
+                        .WithStatusCode(HttpStatusCode.NotFound)
+                        .WithModel(new {Error = string.Format("Unknown Device ID ({0})", parameters.id)});
 
-            var coapRequest = HttpTranslator.GetCoapRequest(new CoapDotNetHttpRequest(Request, device.Url + "/" + (string)parameters.endpoint), Request.Url.SiteBase, true);
+                //Turn HTTP request into COAP request
+                var request = new CoapDotNetHttpRequest(Request, device.Url + "/" + (string) parameters.endpoint);
+                var coapRequest = HttpTranslator.GetCoapRequest(request, Request.Url.SiteBase, true);
+                coapRequest.URI = new Uri("coap://" + device.Url + "/" + (string) parameters.endpoint);
 
-            throw new NotImplementedException();
-        }
+                //Send COAP request
+                var responses = Observable.FromEventPattern<ResponseEventArgs>(a => coapRequest.Respond += a, a => coapRequest.Respond -= a);
+                coapRequest.Send();
 
-        private dynamic ProxyPut(dynamic parameters)
-        {
-            throw new NotImplementedException();
-        }
+                //Wait for response
+                var response = responses.First().EventArgs.Response;
 
-        private dynamic ProxyPost(dynamic parameters)
-        {
-            throw new NotImplementedException();
-        }
+                //Turn COAP response into HTTP response
+                var httpResponse = new CoapDotNetHttpResponse();
+                HttpTranslator.GetHttpResponse(request, response, httpResponse);
 
-        private dynamic ProxyDelete(dynamic parameters)
-        {
-            throw new NotImplementedException();
+                //Send HTTP response
+                httpResponse.OutputStream.Position = 0;
+                return Response
+                    .FromStream(httpResponse.OutputStream, httpResponse.ContentType)
+                    .WithHeaders(httpResponse.Headers.ToArray())
+                    .WithStatusCode(httpResponse.StatusCode);
+            });
         }
 
         private class CoapDotNetHttpRequest
@@ -94,7 +108,7 @@ namespace Bastet.HttpServer.Modules
                 get
                 {
                     NameValueCollection nvc = new NameValueCollection();
-                    foreach (var requestHeader in _request.Headers.SelectMany(a => a.Value.Select(v => new { Key = a.Key, Value = v })))
+                    foreach (var requestHeader in _request.Headers.SelectMany(a => a.Value.Select(v => new {Key = a.Key, Value = v})))
                         nvc.Add(requestHeader.Key, requestHeader.Value);
                     return nvc;
                 }
@@ -127,14 +141,40 @@ namespace Bastet.HttpServer.Modules
 
             public object this[object key]
             {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-                set
-                {
-                    throw new NotImplementedException();
-                }
+                get { throw new NotImplementedException(); }
+                set { throw new NotImplementedException(); }
+            }
+        }
+
+        private class CoapDotNetHttpResponse
+            : IHttpResponse
+        {
+            private readonly List<Tuple<string, string>> _headers = new List<Tuple<string, string>>();
+            public IEnumerable<Tuple<string, string>> Headers { get { return _headers; } }
+
+            public string ContentType
+            {
+                get { return _headers.Single(a => a.Item1 == "content-type").Item2; }
+            }
+
+            public void AppendHeader(string name, string value)
+            {
+                _headers.Add(new Tuple<string, string>(name, value));
+            }
+
+            private readonly MemoryStream _stream = new MemoryStream();
+            public MemoryStream OutputStream
+            {
+                get { return _stream; }
+            }
+
+            public int StatusCode { get; set; }
+
+            public string StatusDescription { get; set; }
+
+            Stream IHttpResponse.OutputStream
+            {
+                get { return _stream; }
             }
         }
     }

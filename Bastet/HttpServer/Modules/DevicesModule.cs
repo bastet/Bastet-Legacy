@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 using Bastet.Database.Model;
 using Nancy;
@@ -26,7 +27,7 @@ namespace Bastet.HttpServer.Modules
             Delete["/{id}"] = DeleteDevice;
         }
 
-        private static object SerializeDevice(Url baseUrl, Device device)
+        private static object SerializeDevice(Url url, Device device)
         {
             if (device == null)
                 return null;
@@ -35,7 +36,8 @@ namespace Bastet.HttpServer.Modules
             {
                 Id = device.Id,
                 Url = device.Url,
-                Resources = baseUrl + "/well-known/.core"
+                Proxy = new Uri(new Uri(url.SiteBase), String.Format("devices/{0}/proxy", device.Id)),
+                Resources = new Uri(new Uri(url.SiteBase), String.Format("devices/{0}/proxy/.well-known/core", device.Id))
             };
         }
 
@@ -46,10 +48,9 @@ namespace Bastet.HttpServer.Modules
         /// <returns></returns>
         private dynamic ListDevices(dynamic parameters)
         {
-            var url = Request.Url;
             return _connection
                 .Select<Device>()
-                .Select(d => url + "/" + d.Id)
+                .Select(d => Request.Url.SiteBase + PATH + "/" + d.Id)
                 .ToArray();
         }
 

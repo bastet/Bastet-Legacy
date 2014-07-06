@@ -12,12 +12,10 @@ namespace Bastet.HttpServer.Modules
 
         private dynamic ListRoutes(dynamic parameters)
         {
-            var root = Request.Url;
-
             return new
             {
-                devices = root + DevicesModule.PATH,
-                sensors = root + SensorsModule.PATH
+                devices = Request.Url.SiteBase + DevicesModule.PATH,
+                sensors = Request.Url.SiteBase + SensorsModule.PATH
             };
         }
     }
