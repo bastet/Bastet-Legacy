@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using Bastet.Database.Model;
+﻿using Bastet.Database.Model;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
 
@@ -19,12 +17,14 @@ namespace Bastet.Database
         /// </summary>
         /// <param name="clean"></param>
         /// <param name="adminUsername"></param>
-        public Database(bool clean = false, string adminUsername = null)
+        /// <param name="adminPassword"></param>
+        /// <param name="connectionString"></param>
+        public Database(bool clean = false, string adminUsername = null, string adminPassword = null, string connectionString = null)
         {
-            _connectionFactory = new OrmLiteConnectionFactory("Data Source=bastet.sqlite;Version=3;New=True;", SqliteDialect.Provider);
-            using (IDbConnection db = _connectionFactory.Open())
+            _connectionFactory = new OrmLiteConnectionFactory(connectionString, SqliteDialect.Provider);
+            using (var db = _connectionFactory.Open())
             {
-                Type[] models = new Type[]
+                var models = new[]
                 {
                     typeof(Device),
                     typeof(Sensor),
@@ -42,19 +42,18 @@ namespace Bastet.Database
                     foreach (var model in models)
                         db.CreateTable(true, model);
 
-                    if (adminUsername != null)
+                    if (adminUsername != null && adminPassword != null)
                     {
                         using (var transaction = db.OpenTransaction())
                         {
-                            var admin = db.SingleWhere<User>("Username", adminUsername);
-                            if (admin == null)
-                                Console.WriteLine("Admin user {0} not found", adminUsername);
-                            else
-                            {
-                                var claim = db.Where<Claim>(new { UserId = admin.Id, Name = "create-claim" });
-                                if (claim == null)
-                                    db.Save<Claim>(new Claim(admin, "create-claim"));
-                            }
+                            //Create admin
+                            var admin = new User(adminUsername, adminPassword);
+                            db.Save(admin);
+
+                            //Give admin permission to give out new permissions
+                            var claim = db.Where<Claim>(new { UserId = admin.Id, Name = "create-claim" });
+                            if (claim == null)
+                                db.Save(new Claim(admin, "create-claim"));
 
                             transaction.Commit();
                         }

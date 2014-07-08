@@ -77,7 +77,7 @@ namespace Bastet.HttpServer
 
                 var connection = container.Get<IDbConnection>();
 
-                string key = (string)ctx.Request.Query.sessionkey;
+                var key = (string)ctx.Request.Query.sessionkey;
                 var session = connection.SingleWhere<Session>("SessionKey", key);
                 if (session == null)
                     return null;
