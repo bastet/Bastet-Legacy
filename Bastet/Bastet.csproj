@@ -147,7 +147,7 @@
     <Compile Include="HttpServer\Modules\ReadingsModule.cs" />
     <Compile Include="HttpServer\Modules\SensorsModule.cs" />
     <Compile Include="HttpServer\Modules\DevicesModule.cs" />
-    <Compile Include="HttpServer\Modules\MainModule.cs" />
+    <Compile Include="HttpServer\Modules\RootModule.cs" />
     <Compile Include="HttpServer\Modules\UsersModule.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Concat.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Prepend.cs" />
@@ -163,6 +163,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="HttpServer\Views\Root\Root.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -170,9 +173,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="HttpServer\Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

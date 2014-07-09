@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bastet.Database.Model;
@@ -33,8 +34,29 @@ namespace Bastet.HttpServer.Modules
         {
             return Task<dynamic>.Factory.StartNew(() =>
             {
-                var userName = (string)(Request.Query.UserName ?? Request.Form.UserName);
-                var password = (string)(Request.Query.Password ?? Request.Form.Password);
+                string userName;
+                string password;
+
+                // First, accept auth value from HTTP basic auth
+                if (Request.Headers.Authorization.Any())
+                {
+                    // https://en.wikipedia.org/wiki/Basic_access_authentication
+
+                    var headerValue = Request.Headers.Authorization.Split(' ');
+                    if (!headerValue[0].Equals("basic", StringComparison.InvariantCultureIgnoreCase))
+                        throw new NotSupportedException("Authorization type must be 'basic'");
+                    var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(headerValue[1]));
+
+                    var splitIndex = decoded.IndexOf(':');
+                    userName = decoded.Substring(0, splitIndex);
+                    password = decoded.Substring(splitIndex + 1, decoded.Length - decoded.IndexOf(':') - 1);
+                }
+                else
+                {
+                    //If no basic auth data was supplied, pull data from query string or form
+                    userName = (string) (Request.Query.username ?? Request.Form.username);
+                    password = (string) (Request.Query.password ?? Request.Form.password);
+                }
 
                 using (var transaction = _connection.OpenTransaction())
                 {
@@ -44,7 +66,8 @@ namespace Bastet.HttpServer.Modules
                     {
                         return Negotiate
                             .WithModel(new { Error = "Incorrect Username Or Password" })
-                            .WithStatusCode(HttpStatusCode.Unauthorized);
+                            .WithStatusCode(HttpStatusCode.Unauthorized)
+                            .WithHeader("WWW-Authenticate", "Basic");
                     }
 
                     //Create or find a session for this user
