@@ -50,7 +50,7 @@ namespace Bastet.Database
                             var admin = new User(adminUsername, adminPassword);
                             db.Save(admin);
 
-                            //Give admin permission to give out new permissions
+                            //Give admin user permission to give out new permissions
                             var claim = db.Where<Claim>(new { UserId = admin.Id, Name = "create-claim" });
                             if (claim == null)
                                 db.Save(new Claim(admin, "create-claim"));

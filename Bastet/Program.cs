@@ -2,11 +2,8 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Bastet.HttpServer;
 using CommandLine;
 using CommandLine.Text;
-using Common.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Ninject;
 using ServiceStack.Data;
@@ -60,10 +57,12 @@ namespace Bastet
 
     public class Options
     {
-        private readonly ILog _logger = LogManager.GetCurrentClassLogger();
-
-        [Option('o', "options", Required = false, HelpText = "Path to a file of options (overridden by commandline arguments)")]
+        [Option('o', "options", Required = false, HelpText = "Path to a file of options (overrides commandline arguments)")]
+        // ReSharper disable MemberCanBePrivate.Global
+        // ReSharper disable UnusedAutoPropertyAccessor.Global
         public string OptionsPath { get; set; }
+        // ReSharper restore UnusedAutoPropertyAccessor.Global
+        // ReSharper restore MemberCanBePrivate.Global
 
         [Option('c', "clean", Required = false, HelpText = "If set, clear all data from the database on startup")]
         // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -212,24 +211,25 @@ namespace Bastet
 
             if (!File.Exists(OptionsPath))
             {
-                _logger.ErrorFormat("Could not find expected options file at path {0}", OptionsPath);
+                Console.WriteLine("Could not find expected options file at path {0}", OptionsPath);
                 return;
             }
 
-            JObject json = JObject.Parse(File.ReadAllText(OptionsPath));
+            var json = JObject.Parse(File.ReadAllText(OptionsPath));
 
-            throw new NotSupportedException("Loading Config from file is not supported, do not use --options");
+            //Select properties marked with the OptionAttribute
+            var properties = GetType()
+                .GetProperties()
+                .Select(p => new { prop = p, attr = (OptionAttribute)p.GetCustomAttributes(typeof(OptionAttribute), true).SingleOrDefault() })
+                .Where(p => p.attr != null);
 
-            //var properties = GetType()
-            //    .GetProperties()
-            //    .Select(p => new { prop = p, attr = (OptionAttribute)p.GetCustomAttributes(typeof(OptionAttribute), true).SingleOrDefault() })
-            //    .Where(p => p.attr != null);
-            //foreach (var property in properties)
-            //{
-            //    if (json[property.attr.LongName] != null)
-            //    {
-            //    }
-            //}
+            //Find a matching string in the json document
+            foreach (var property in properties)
+            {
+                JToken value;
+                if (json.TryGetValue(property.attr.LongName, out value))
+                    property.prop.SetValue(this, value.ToObject(property.prop.PropertyType), null);
+            }
         }
         #endregion
     }
