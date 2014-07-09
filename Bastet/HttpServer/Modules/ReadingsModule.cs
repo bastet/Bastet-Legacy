@@ -12,7 +12,7 @@ namespace Bastet.HttpServer.Modules
     public class ReadingsModule
         : NancyModule
     {
-        public const string PATH = "/devices/{deviceid}/sensors/{sensorid}/readings";
+        public const string PATH = SensorsModule.PATH + "/{sensorid}/readings";
 
         private readonly IDbConnection _connection;
 

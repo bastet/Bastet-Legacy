@@ -19,6 +19,11 @@ namespace Bastet.HttpServer
     {
         private readonly IKernel _kernel;
 
+        protected override IRootPathProvider RootPathProvider
+        {
+            get { return new NancyRootPath(); }
+        }
+
         protected override NancyInternalConfiguration InternalConfiguration
         {
             get
@@ -38,12 +43,13 @@ namespace Bastet.HttpServer
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Access-Control-Allow-Origin", "*"));
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Access-Control-Allow-Methods", "DELETE, GET, HEAD, POST, PUT, OPTIONS, PATCH"));
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Access-Control-Allow-Headers", "Content-Type"));
-            ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Accept", "application/json"));
+            //ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Accept", "application/json"));
 
-            //Default format to JSON
             ApplicationPipelines.BeforeRequest.AddItemToStartOfPipeline(x =>
             {
-                x.Request.Headers.Accept = x.Request.Headers.Accept.Concat(new Tuple<string, decimal>("application/json", 1.05m));
+                //Default format to JSON
+                x.Request.Headers.Accept = x.Request.Headers.Accept.Concat(new Tuple<string, decimal>("application/json", 1));
+
                 return null;
             });
         }

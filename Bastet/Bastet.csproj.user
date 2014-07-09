@@ -4,6 +4,6 @@
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>-h 58241 -c</StartArguments>
+    <StartArguments>-h 58241 --database="Data Source=:memory:;Version=3;New=True;"</StartArguments>
   </PropertyGroup>
 </Project>

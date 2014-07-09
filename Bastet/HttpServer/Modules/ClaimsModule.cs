@@ -13,7 +13,7 @@ namespace Bastet.HttpServer.Modules
     public class ClaimsModule
         : NancyModule
     {
-        public const string PATH = "/users/{username}/claims";
+        public const string PATH = ApiMain.PATH + "/users/{username}/claims";
 
         private readonly IDbConnection _connection;
 

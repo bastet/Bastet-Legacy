@@ -16,12 +16,14 @@ namespace Bastet.HttpServer.Modules
             //TODO:: Once https is working comment this in!
             //url.Scheme = "https";
 
-            return new
-            {
-                Devices = ModuleHelpers.CreateUrl(Request, DevicesModule.PATH),
-                Authentication = ModuleHelpers.CreateUrl(Request, AuthenticationModule.PATH),
-                Users = ModuleHelpers.CreateUrl(Request, UsersModule.PATH)
-            };
+            return Negotiate
+                .WithModel(new
+                {
+                    Devices = ModuleHelpers.CreateUrl(Request, DevicesModule.PATH),
+                    Authentication = ModuleHelpers.CreateUrl(Request, AuthenticationModule.PATH),
+                    Users = ModuleHelpers.CreateUrl(Request, UsersModule.PATH)
+                })
+                .WithMediaRangeModel("text/html", "Hello");
         }
     }
 }

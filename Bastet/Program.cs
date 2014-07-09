@@ -2,8 +2,10 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Bastet.HttpServer;
 using CommandLine;
 using CommandLine.Text;
+using Nancy;
 using Newtonsoft.Json.Linq;
 using Ninject;
 using ServiceStack.Data;

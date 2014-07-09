@@ -21,7 +21,7 @@ namespace Bastet.HttpServer.Modules
     public class DevicesProxyModule
         : NancyModule
     {
-        public const string PATH = "/devices/{id}/proxy";
+        public const string PATH = ApiMain.PATH + "/devices/{id}/proxy";
 
         private readonly IDbConnection _connection;
 

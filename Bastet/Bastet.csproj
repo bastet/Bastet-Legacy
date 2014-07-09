@@ -129,6 +129,8 @@
     <Compile Include="Database\Model\Session.cs" />
     <Compile Include="Database\Model\StringReading.cs" />
     <Compile Include="Database\Model\User.cs" />
+    <Compile Include="HttpServer\Modules\ApiMain.cs" />
+    <Compile Include="HttpServer\NancyRootPath.cs" />
     <Compile Include="SecurityHelpers.cs" />
     <Compile Include="GoogleAuthenticator.cs" />
     <Compile Include="HttpServer\Bootstrapper.cs" />

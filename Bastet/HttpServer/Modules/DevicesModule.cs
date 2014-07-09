@@ -13,7 +13,7 @@ namespace Bastet.HttpServer.Modules
     public class DevicesModule
         : NancyModule
     {
-        public const string PATH = "/devices";
+        public const string PATH = ApiMain.PATH + "/devices";
 
         private readonly IDbConnection _connection;
 
