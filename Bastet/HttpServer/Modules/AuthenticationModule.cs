@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bastet.Database.Model;
 using Nancy;
+using Nancy.Cookies;
 using Nancy.Security;
 using ServiceStack.OrmLite;
 
@@ -84,11 +85,12 @@ namespace Bastet.HttpServer.Modules
                     //Save any changes made
                     transaction.Commit();
 
-                    //Return the session key
-                    return new
-                    {
-                        SessionKey = session.SessionKey,
-                    };
+                    return Negotiate
+                        .WithCookie(CreateCookie(session.SessionKey))
+                        .WithModel(new
+                        {
+                            SessionKey = session.SessionKey,
+                        });
                 }
             });
         }
@@ -99,12 +101,13 @@ namespace Bastet.HttpServer.Modules
             {
                 this.RequiresAuthentication();
 
-                var u = Context.CurrentUser;
-                return new
-                {
-                    User = ModuleHelpers.CreateUrl(Request, UsersModule.PATH, Uri.EscapeUriString(u.UserName)),
-                    Claims = u.Claims.ToArray()
-                };
+                return Negotiate
+                    .WithCookie(CreateCookie(((Identity) Context.CurrentUser).Session.SessionKey))
+                    .WithModel(new
+                    {
+                        User = ModuleHelpers.CreateUrl(Request, UsersModule.PATH, Uri.EscapeUriString(Context.CurrentUser.UserName)),
+                        Claims = Context.CurrentUser.Claims.ToArray()
+                    });
             });
         }
 
@@ -118,6 +121,12 @@ namespace Bastet.HttpServer.Modules
 
                 return HttpStatusCode.NoContent;
             });
+        }
+
+        private NancyCookie CreateCookie(string key)
+        {
+            //todo: set secure: true when HTTPs is working
+            return new NancyCookie("Bastet_Session_Key", key);//, false, true)
         }
 
         private Identity ValidateUser(string userName, string password)

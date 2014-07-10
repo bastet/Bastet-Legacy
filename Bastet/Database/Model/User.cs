@@ -16,6 +16,11 @@ namespace Bastet.Database.Model
 // ReSharper restore UnusedAutoPropertyAccessor.Global
 
         /// <summary>
+        /// The (other) unique ID of this user
+        /// </summary>
+        public Guid Guid { get; set; }
+
+        /// <summary>
         /// The username for logging in
         /// </summary>
         public string Username { get; set; }

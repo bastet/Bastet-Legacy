@@ -43,12 +43,12 @@ namespace Bastet.HttpServer
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Access-Control-Allow-Origin", "*"));
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Access-Control-Allow-Methods", "DELETE, GET, HEAD, POST, PUT, OPTIONS, PATCH"));
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Access-Control-Allow-Headers", "Content-Type"));
-            //ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Accept", "application/json"));
+            ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Accept", "application/json"));
 
             ApplicationPipelines.BeforeRequest.AddItemToStartOfPipeline(x =>
             {
                 //Default format to JSON
-                x.Request.Headers.Accept = x.Request.Headers.Accept.Concat(new Tuple<string, decimal>("application/json", 1));
+                x.Request.Headers.Accept = x.Request.Headers.Accept.Concat(new Tuple<string, decimal>("application/json", 1.05m));
 
                 return null;
             });
@@ -78,13 +78,18 @@ namespace Bastet.HttpServer
         {
             StatelessAuthentication.Enable(pipelines, new StatelessAuthenticationConfiguration(ctx =>
             {
-                if (!ctx.Request.Query.sessionkey.HasValue)
-                    return null;
+                string sessionKey;
+                if (!ctx.Request.Cookies.TryGetValue("Bastet_Session_Key", out sessionKey))
+                {
+                    if (ctx.Request.Query.sessionkey.HasValue)
+                        sessionKey = (string) ctx.Request.Query.sessionkey;
+                    else
+                        return null;
+                }
 
                 var connection = container.Get<IDbConnection>();
 
-                var key = (string)ctx.Request.Query.sessionkey;
-                var session = connection.SingleWhere<Session>("SessionKey", key);
+                var session = connection.SingleWhere<Session>("SessionKey", sessionKey);
                 if (session == null)
                     return null;
                 var user = connection.SingleById<User>(session.UserId);
