@@ -2,10 +2,9 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Bastet.HttpServer;
+using System.Threading;
 using CommandLine;
 using CommandLine.Text;
-using Nancy;
 using Newtonsoft.Json.Linq;
 using Ninject;
 using ServiceStack.Data;
@@ -18,8 +17,12 @@ namespace Bastet
         private readonly HttpServer.HttpServer _server;
         private readonly IKernel _kernel;
 
+        private readonly bool _daemon = false;
+
         private Program(Options options)
         {
+            _daemon = options.Daemon;
+
             _kernel = new StandardKernel();
 
             if (options.CleanStart)
@@ -37,7 +40,18 @@ namespace Bastet
         {
             _server.Start(_kernel);
 
-            Console.ReadLine();
+            //Under mono if you deamonize a process a Console.ReadLine will cause an EOF 
+            //so we need to block another way
+            if (_daemon)
+            {
+                while (true)
+                    Thread.Sleep(10000);
+            }
+            else
+            {
+                Console.WriteLine("Press Any Key To Exit");
+                Console.ReadKey();
+            }
         }
 
         public static void Main(string[] args)
@@ -66,7 +80,7 @@ namespace Bastet
         // ReSharper restore UnusedAutoPropertyAccessor.Global
         // ReSharper restore MemberCanBePrivate.Global
 
-        [Option('c', "clean", Required = false, HelpText = "If set, clear all data from the database on startup")]
+        [Option('s', "setup", Required = false, HelpText = "If set, clear all data from the database on startup")]
         // ReSharper disable UnusedAutoPropertyAccessor.Global
         public bool CleanStart { get; set; }
         // ReSharper restore UnusedAutoPropertyAccessor.Global
@@ -77,20 +91,25 @@ namespace Bastet
         // ReSharper restore UnusedAutoPropertyAccessor.Global
 
         [Option('a', "admin", Required = false,
-        HelpText = "The username of the admin user (only applied in conjunction with --clean)")]
+        HelpText = "The username of the admin user (only applied in conjunction with --setup)")]
         // ReSharper disable UnusedAutoPropertyAccessor.Global
         public string AdminUsername { get; set; }
 
         // ReSharper restore UnusedAutoPropertyAccessor.Global
 
         [Option('p', "password", Required = false,
-        HelpText = "The password of the admin user (only applied in conjunction with --clean)")]
+        HelpText = "The password of the admin user (only applied in conjunction with --setup)")]
         // ReSharper disable UnusedAutoPropertyAccessor.Global
         public string AdminPassword { get; set; }
         // ReSharper restore UnusedAutoPropertyAccessor.Global
 
-        [Option('d', "database", Required = false, HelpText = "A database connection string to use")]
+        [Option('c', "connection", Required = false, HelpText = "A database connection string to use")]
         public string ConnectionString { get; set; }
+
+        [Option('d', "daemonize", Required = false, HelpText = "If set, this process will run as a daemon")]
+        // ReSharper disable UnusedAutoPropertyAccessor.Global
+        public bool Daemon { get; set; }
+        // ReSharper restore UnusedAutoPropertyAccessor.Global
 
         [HelpOption]
         public string GetUsage()
@@ -183,7 +202,7 @@ namespace Bastet
                 {
                     var str = lines[highlighted].Specific();
                     Console.WriteLine(" - Using Configured Connection String, Next Time Run With:");
-                    Console.WriteLine("--database='{0}'", str);
+                    Console.WriteLine("--connection='{0}'", str);
                     return str;
                 }
             }

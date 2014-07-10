@@ -9,15 +9,13 @@ namespace Bastet.HttpServer.Modules
 
         public ApiMain()
         {
+            //this.RequiresHttps();
+
             Get[PATH] = ListRoutes;
         }
 
         private dynamic ListRoutes(dynamic parameters)
         {
-            var url = Request.Url;
-            //TODO:: Once https is working comment this in!
-            //url.Scheme = "https";
-
             return new
             {
                 Devices = ModuleHelpers.CreateUrl(Request, DevicesModule.PATH),
