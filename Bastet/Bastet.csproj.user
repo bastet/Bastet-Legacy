@@ -4,6 +4,9 @@
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>-h 58241 --connection="Data Source=bastet.sqlite;Version=3;New=True;"</StartArguments>
+    <StartArguments>-h 58241 --connection="Data Source=bastet.sqlite%3bVersion=3%3bNew=True%3b"</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <StartArguments>-h 58241 --connection="Data Source=bastet.sqlite%3bVersion=3%3bNew=True%3b"</StartArguments>
   </PropertyGroup>
 </Project>

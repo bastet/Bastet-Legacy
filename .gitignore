@@ -1,5 +1,6 @@
 *.suo
 *.user
-/Bastet/bin/Debug
-/Bastet/obj/Debug
-/*.ncrunchsolution
+*.ncrunchsolution
+
+/Bastet/bin
+/Bastet/obj

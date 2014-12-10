@@ -73,7 +73,7 @@ namespace Bastet.HttpServer.Modules
                     .FromStream(httpResponse.OutputStream, httpResponse.ContentType)
                     .WithHeaders(httpResponse.Headers.ToArray())
                     .WithStatusCode(httpResponse.StatusCode);
-            });
+            }, ct);
         }
 
         private class CoapDotNetHttpRequest

@@ -92,7 +92,7 @@ namespace Bastet.HttpServer.Modules
                             SessionKey = session.SessionKey,
                         });
                 }
-            });
+            }, ct);
         }
 
         private Task<dynamic> GetAuth(dynamic parameters, CancellationToken ct)
@@ -108,7 +108,7 @@ namespace Bastet.HttpServer.Modules
                         User = ModuleHelpers.CreateUrl(Request, UsersModule.PATH, Uri.EscapeUriString(Context.CurrentUser.UserName)),
                         Claims = Context.CurrentUser.Claims.ToArray()
                     });
-            });
+            }, ct);
         }
 
         private Task<dynamic> DeleteAuth(dynamic parameters, CancellationToken ct)
@@ -120,7 +120,7 @@ namespace Bastet.HttpServer.Modules
                 ModuleHelpers.Delete<Session>(_connection, ((Identity)Context.CurrentUser).Session.Id);
 
                 return HttpStatusCode.NoContent;
-            });
+            }, ct);
         }
 
         private NancyCookie CreateCookie(string key)

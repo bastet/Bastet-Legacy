@@ -97,13 +97,13 @@ namespace Bastet
             /// </summary>
             public static string UrlEncode(string value)
             {
-                const string urlEncodeAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
+                const string URL_ENCODE_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~";
 
                 var builder = new StringBuilder();
 
                 foreach (var symbol in value)
                 {
-                    if (urlEncodeAlphabet.IndexOf(symbol) != -1)
+                    if (URL_ENCODE_ALPHABET.IndexOf(symbol) != -1)
                     {
                         builder.Append(symbol);
                     }
@@ -122,11 +122,11 @@ namespace Bastet
             /// </summary>
             public static string Base32Encode(IList<byte> data)
             {
-                const int inByteSize = 8;
-                const int outByteSize = 5;
-                const string base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+                const int IN_BYTE_SIZE = 8;
+                const int OUT_BYTE_SIZE = 5;
+                const string BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-                var builder = new StringBuilder((data.Count + 7) * inByteSize / outByteSize);
+                var builder = new StringBuilder((data.Count + 7) * IN_BYTE_SIZE / OUT_BYTE_SIZE);
 
                 int i = 0, index = 0;
                 while (i < data.Count)
@@ -135,20 +135,20 @@ namespace Bastet
                     int digit;
 
                     //Is the current digit going to span a byte boundary?
-                    if (index > (inByteSize - outByteSize))
+                    if (index > (IN_BYTE_SIZE - OUT_BYTE_SIZE))
                     {
                         int nextByte = (i + 1) < data.Count ? data[i + 1] : 0;
 
                         digit = currentByte & (0xFF >> index);
-                        index = (index + outByteSize) % inByteSize;
+                        index = (index + OUT_BYTE_SIZE) % IN_BYTE_SIZE;
                         digit <<= index;
-                        digit |= nextByte >> (inByteSize - index);
+                        digit |= nextByte >> (IN_BYTE_SIZE - index);
                         i++;
                     }
                     else
                     {
-                        digit = (currentByte >> (inByteSize - (index + outByteSize))) & 0x1F;
-                        index = (index + outByteSize) % inByteSize;
+                        digit = (currentByte >> (IN_BYTE_SIZE - (index + OUT_BYTE_SIZE))) & 0x1F;
+                        index = (index + OUT_BYTE_SIZE) % IN_BYTE_SIZE;
 
                         if (index == 0)
                         {
@@ -156,7 +156,7 @@ namespace Bastet
                         }
                     }
 
-                    builder.Append(base32Alphabet[digit]);
+                    builder.Append(BASE32_ALPHABET[digit]);
                 }
 
                 return builder.ToString();

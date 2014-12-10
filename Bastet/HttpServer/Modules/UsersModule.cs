@@ -50,7 +50,7 @@ namespace Bastet.HttpServer.Modules
                     .Select<User>()
                     .Select(d => Request.Url.SiteBase + PATH + "/" + Uri.EscapeUriString(d.Username))
                     .ToArray();
-            });
+            }, ct);
         }
 
         private Task<dynamic> CreateUser(dynamic parameters, CancellationToken ct)
@@ -81,7 +81,7 @@ namespace Bastet.HttpServer.Modules
                     //Return the user
                     return SerializeUser(user);
                 }
-            });
+            }, ct);
         }
 
         private Task<dynamic> GetUserDetails(dynamic parameters, CancellationToken ct)
@@ -98,7 +98,7 @@ namespace Bastet.HttpServer.Modules
                 }
 
                 return SerializeUser(user);
-            });
+            }, ct);
         }
     }
 }

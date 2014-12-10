@@ -1,12 +1,11 @@
-﻿using System;
-using System.Data;
-using System.Globalization;
-using System.Linq;
-using Bastet.Database.Model;
+﻿using Bastet.Database.Model;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Security;
 using ServiceStack.OrmLite;
+using System.Data;
+using System.Globalization;
+using System.Linq;
 
 namespace Bastet.HttpServer.Modules
 {

@@ -45,7 +45,7 @@ namespace Bastet.HttpServer.Modules
                     this.RequiresClaims(new[] { "list-claims" });
 
                 return Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection).Select(SerializeClaim).ToArray();
-            });
+            }, ct);
         }
 
         private Task<dynamic> CreateClaim(dynamic parameters, CancellationToken ct)
@@ -78,7 +78,7 @@ namespace Bastet.HttpServer.Modules
                 }
 
                 return Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection).Select(SerializeClaim).ToArray();
-            });
+            }, ct);
         }
 
         private Task<dynamic> DeleteClaim(dynamic parameters, CancellationToken ct)
@@ -112,7 +112,7 @@ namespace Bastet.HttpServer.Modules
                 }
 
                 return Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection).Select(SerializeClaim).ToArray();
-            });
+            }, ct);
         }
     }
 }
