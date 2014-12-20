@@ -202,7 +202,11 @@ namespace Bastet
                 {
                     var str = lines[highlighted].Specific();
                     Console.WriteLine(" - Using Configured Connection String, Next Time Run With:");
-                    Console.WriteLine("--connection='{0}'", str);
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("\t--connection='{0}'", str);
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine();
                     return str;
                 }
             }
