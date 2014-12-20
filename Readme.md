@@ -27,7 +27,7 @@ The main purpose of Bastet is to act as a proxy between your control scripts, wh
  - Devices (Proxying)
  - Devices (Sensors)
 
-#### Authentication
+### Authentication
 
 Almost all of the API requires authentication to use, so this is the first thing to check out! There are two ways to authenticate your requests:
 
@@ -42,19 +42,42 @@ To get your session key POST to /authentication. You can send your parameters in
  
 This will return a your session key, as well as set a cookie with your session key. From here on you can either send the cookie along with your requests, or include _sessionkey=thisismysupersecretsessionkey_ in your query string. To logout simply DELETE to /authentication and this session key will no longer be valid.
 
-#### Users
-
-Sending a GET request to /users will list all users, if you have permission (requires [claim](#claims) "list-users"). To create a new user POST to /users with "username" and "password" in either the query string or the form data.
-
-#### Claims
+### Claims
 
 User permissions are managed with "claims". Certain actions require a user to have a certain claim to perform them, for example getting a list of all users (GET /users) requires the "list-users" claim.
 
-To get claims for a specific user GET /users/{username}/claims, this requires the "list-claims" claim.
+#### Get Claims For Specific User
 
-To create a claim for a user POST /users/{username}/claims, this requires the "create-claim" claim. The body of the request should be the name of the claim to create.
+ - GET /users/{username}/claims
+ - Requires claims: "list-claims"
+ 
+#### Create A Claim For A Specific User
 
-Similarly to delete a claim for a user DELETE /users/{username}/claims, this requires the "delete-claim" claims. The body of the request should be the name of the claim to delete.
+ - POST /users/{username}/claims
+ - Requires claims: "create-claim"
+ - Body should be the name of the claim
+ 
+#### Delete A Claim For A Specific User
+
+ - DELETE /users/{username}/claims
+ - Requires claims: "delete-claim"
+ - Body should be the name of the claim
+
+### Users
+
+#### List All Users
+
+ - GET /users
+ - Requires claims: "list-users"
+ 
+#### Get Specific User
+
+ - GET /users/{username}
+ 
+#### Create User
+ 
+  - POST /user
+  - Send "username" and "password" in Query string or form data
 
 
 
