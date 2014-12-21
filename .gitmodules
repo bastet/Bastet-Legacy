@@ -1,0 +1,3 @@
+[submodule "CoAP.NET"]
+	path = CoAP.NET
+	url = https://github.com/martindevans/CoAP.NET

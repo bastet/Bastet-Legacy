@@ -41,7 +41,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;COAP18</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -146,6 +146,76 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoAP.NET\AbstractLayer.cs" />
+    <Compile Include="CoAP.NET\BlockOption.cs" />
+    <Compile Include="CoAP.NET\BlockwiseLayer.cs" />
+    <Compile Include="CoAP.NET\BlockwiseStatus.cs" />
+    <Compile Include="CoAP.NET\ByteArrayUtils.cs" />
+    <Compile Include="CoAP.NET\Chain.cs" />
+    <Compile Include="CoAP.NET\ClientMessageDeliverer.cs" />
+    <Compile Include="CoAP.NET\CoapConfig.cs" />
+    <Compile Include="CoAP.NET\CoapConstants.cs" />
+    <Compile Include="CoAP.NET\CoAPEndPoint.cs" />
+    <Compile Include="CoAP.NET\CoapExchange.cs" />
+    <Compile Include="CoAP.NET\CoapStack.cs" />
+    <Compile Include="CoAP.NET\Code.cs" />
+    <Compile Include="CoAP.NET\CropRotation.cs" />
+    <Compile Include="CoAP.NET\DatagramReader.cs" />
+    <Compile Include="CoAP.NET\DatagramWriter.cs" />
+    <Compile Include="CoAP.NET\DataReceivedEventArgs.cs" />
+    <Compile Include="CoAP.NET\DeduplicatorFactory.cs" />
+    <Compile Include="CoAP.NET\EmptyMessage.cs" />
+    <Compile Include="CoAP.NET\EndPointManager.cs" />
+    <Compile Include="CoAP.NET\Exchange.cs" />
+    <Compile Include="CoAP.NET\HttpTranslator.cs" />
+    <Compile Include="CoAP.NET\IChannel.cs" />
+    <Compile Include="CoAP.NET\ICoapConfig.cs" />
+    <Compile Include="CoAP.NET\IDeduplicator.cs" />
+    <Compile Include="CoAP.NET\IEndPoint.cs" />
+    <Compile Include="CoAP.NET\IEntry.cs" />
+    <Compile Include="CoAP.NET\IExchangeForwarder.cs" />
+    <Compile Include="CoAP.NET\IHttpRequest.cs" />
+    <Compile Include="CoAP.NET\IHttpResponse.cs" />
+    <Compile Include="CoAP.NET\ILayer.cs" />
+    <Compile Include="CoAP.NET\IMatcher.cs" />
+    <Compile Include="CoAP.NET\IMessageDecoder.cs" />
+    <Compile Include="CoAP.NET\IMessageDeliverer.cs" />
+    <Compile Include="CoAP.NET\IMessageEncoder.cs" />
+    <Compile Include="CoAP.NET\IResource.cs" />
+    <Compile Include="CoAP.NET\LayerStack.cs" />
+    <Compile Include="CoAP.NET\LinkAttribute.cs" />
+    <Compile Include="CoAP.NET\LinkFormat.cs" />
+    <Compile Include="CoAP.NET\Matcher.cs" />
+    <Compile Include="CoAP.NET\MediaType.cs" />
+    <Compile Include="CoAP.NET\Message.cs" />
+    <Compile Include="CoAP.NET\MessageDecoder.cs" />
+    <Compile Include="CoAP.NET\MessageEncoder.cs" />
+    <Compile Include="CoAP.NET\MessageType.cs" />
+    <Compile Include="CoAP.NET\NoopDeduplicator.cs" />
+    <Compile Include="CoAP.NET\ObserveLayer.cs" />
+    <Compile Include="CoAP.NET\ObserveNotificationOrderer.cs" />
+    <Compile Include="CoAP.NET\ObserveRelation.cs" />
+    <Compile Include="CoAP.NET\ObservingEndpoint.cs" />
+    <Compile Include="CoAP.NET\Option.cs" />
+    <Compile Include="CoAP.NET\OptionType.cs" />
+    <Compile Include="CoAP.NET\ReliabilityLayer.cs" />
+    <Compile Include="CoAP.NET\RemoteResource.cs" />
+    <Compile Include="CoAP.NET\Request.cs" />
+    <Compile Include="CoAP.NET\Resource.cs" />
+    <Compile Include="CoAP.NET\Server\Resources\Resource.cs" />
+    <Compile Include="CoAP.NET\ResourceAttributes.cs" />
+    <Compile Include="CoAP.NET\Response.cs" />
+    <Compile Include="CoAP.NET\ResponseEventArgs.cs" />
+    <Compile Include="CoAP.NET\Scanner.cs" />
+    <Compile Include="CoAP.NET\Spec.cs" />
+    <Compile Include="CoAP.NET\SweepDeduplicator.cs" />
+    <Compile Include="CoAP.NET\SynchronizedCollection.cs" />
+    <Compile Include="CoAP.NET\ThrowHelper.cs" />
+    <Compile Include="CoAP.NET\TokenLayer.cs" />
+    <Compile Include="CoAP.NET\TranslationException.cs" />
+    <Compile Include="CoAP.NET\UDPChannel.NET40.cs" />
+    <Compile Include="CoAP.NET\Utils.cs" />
+    <Compile Include="CoAP.NET\WebLink.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\Model\BlobReading.cs" />
     <Compile Include="Database\Model\Claim.cs" />
@@ -177,6 +247,7 @@
     <Compile Include="MoreLinq\MoreEnumerable.Prepend.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CoAP.NET\UDPChannel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
