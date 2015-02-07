@@ -1,21 +1,24 @@
 ﻿using System;
+using Nancy;
 using Nancy.Hosting.Self;
-using Ninject;
+using ServiceStack.Data;
 
 namespace Bastet.HttpServer
 {
     public class HttpServer
     {
         private readonly ushort _httpPort;
+        private readonly IDbConnectionFactory _connectionFactory;
 
         private static NancyHost _host;
 
-        public HttpServer(ushort httpPort)
+        public HttpServer(ushort httpPort, IDbConnectionFactory connectionFactory)
         {
             _httpPort = httpPort;
+            _connectionFactory = connectionFactory;
         }
 
-        public void Start(IKernel kernel)
+        public void Start()
         {
             var uri = new Uri("http://localhost:" + _httpPort);
             var config = new HostConfiguration
@@ -23,7 +26,7 @@ namespace Bastet.HttpServer
                 RewriteLocalhost = false
             };
 
-            var bootstrapper = new Bootstrapper(kernel);
+            var bootstrapper = new Bootstrapper(_connectionFactory);
 
             _host = new NancyHost(bootstrapper, config, uri);
             _host.Start();

@@ -6,7 +6,6 @@ using System.Threading;
 using CommandLine;
 using CommandLine.Text;
 using Newtonsoft.Json.Linq;
-using Ninject;
 using ServiceStack.Data;
 
 namespace Bastet
@@ -15,7 +14,6 @@ namespace Bastet
     {
         private readonly Database.Database _db;
         private readonly HttpServer.HttpServer _server;
-        private readonly IKernel _kernel;
 
         private readonly bool _daemon = false;
 
@@ -23,22 +21,17 @@ namespace Bastet
         {
             _daemon = options.Daemon;
 
-            _kernel = new StandardKernel();
-
             if (options.CleanStart)
                 options.InteractiveSetup();
 
             _db = new Database.Database(options.CleanStart, options.AdminUsername, options.AdminPassword, options.ConnectionString);
-            _kernel.Bind<Database.Database>().ToConstant(_db);
-            _kernel.Bind<IDbConnectionFactory>().ToMethod(c => _db.ConnectionFactory);
 
-            _server = new HttpServer.HttpServer(options.HttpPort);
-            _kernel.Bind<HttpServer.HttpServer>().ToConstant(_server);
+            _server = new HttpServer.HttpServer(options.HttpPort, _db.ConnectionFactory);
         }
 
         private void Run()
         {
-            _server.Start(_kernel);
+            _server.Start();
 
             //Under mono if you deamonize a process a Console.ReadLine will cause an EOF 
             //so we need to block another way

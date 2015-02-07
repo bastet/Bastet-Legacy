@@ -5,36 +5,35 @@ using MoreLinq;
 using Nancy;
 using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
-using Nancy.Bootstrappers.Ninject;
 using Nancy.Serialization.JsonNet;
+using Nancy.TinyIoc;
 using Newtonsoft.Json;
-using Ninject;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
 
 namespace Bastet.HttpServer
 {
     public class Bootstrapper
-        : NinjectNancyBootstrapper
+        : DefaultNancyBootstrapper
     {
-        private readonly IKernel _kernel;
+        private readonly IDbConnectionFactory _connectionFactory;
 
         protected override IRootPathProvider RootPathProvider
         {
             get { return new NancyRootPath(); }
         }
 
-        protected override NancyInternalConfiguration InternalConfiguration
-        {
-            get
-            {
-                return NancyInternalConfiguration.WithOverrides(x => x.Serializers.Insert(0, typeof(JsonNetSerializer)));
-            }
-        }
+        //protected override NancyInternalConfiguration InternalConfiguration
+        //{
+        //    get
+        //    {
+        //        return NancyInternalConfiguration.WithOverrides(x => x.Serializers.Insert(0, typeof(JsonNetSerializer)));
+        //    }
+        //}
 
-        public Bootstrapper(IKernel kernel)
+        public Bootstrapper(IDbConnectionFactory connectionFactory)
         {
-            _kernel = kernel;
+            _connectionFactory = connectionFactory;
 
             StaticConfiguration.DisableErrorTraces = false;
             StaticConfiguration.EnableRequestTracing = true;
@@ -54,27 +53,22 @@ namespace Bastet.HttpServer
             });
         }
 
-        protected override IKernel GetApplicationContainer()
-        {
-            _kernel.Load<FactoryModule>();
-            return _kernel;
-        }
-
-        protected override void ConfigureApplicationContainer(IKernel container)
+        protected override void ConfigureApplicationContainer(TinyIoCContainer container)
         {
             base.ConfigureApplicationContainer(container);
 
-            container.Rebind<JsonSerializer>().To<CustomJsonSerializer>();
+            container.Register<IDbConnectionFactory>(_connectionFactory);
+            container.Register<JsonSerializer>((a, b) => new CustomJsonSerializer());
         }
 
-        protected override void ApplicationStartup(IKernel container, IPipelines pipelines)
+        protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
             Nancy.Json.JsonSettings.MaxJsonLength = int.MaxValue;
 
             base.ApplicationStartup(container, pipelines);
         }
 
-        protected override void RequestStartup(IKernel container, IPipelines pipelines, NancyContext context)
+        protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext context)
         {
             StatelessAuthentication.Enable(pipelines, new StatelessAuthenticationConfiguration(ctx =>
             {
@@ -82,12 +76,12 @@ namespace Bastet.HttpServer
                 if (!ctx.Request.Cookies.TryGetValue("Bastet_Session_Key", out sessionKey))
                 {
                     if (ctx.Request.Query.sessionkey.HasValue)
-                        sessionKey = (string) ctx.Request.Query.sessionkey;
+                        sessionKey = (string)ctx.Request.Query.sessionkey;
                     else
                         return null;
                 }
 
-                var connection = container.Get<IDbConnection>();
+                var connection = container.Resolve<IDbConnection>();
 
                 var session = connection.SingleWhere<Session>("SessionKey", sessionKey);
                 if (session == null)
@@ -100,12 +94,12 @@ namespace Bastet.HttpServer
             }));
         }
 
-        protected override void ConfigureRequestContainer(IKernel container, NancyContext context)
+        protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)
         {
             base.ConfigureRequestContainer(container, context);
 
-            var factory = container.Get<IDbConnectionFactory>();
-            container.Bind<IDbConnection>().ToMethod(c => factory.Open()).InSingletonScope();
+            var factory = container.Resolve<IDbConnectionFactory>();
+            container.Register<IDbConnection>(factory.Open());
         }
     }
 }
