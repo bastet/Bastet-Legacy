@@ -28,7 +28,7 @@ namespace Bastet.Database.Model
         /// <summary>
         /// The password salt for this user
         /// </summary>
-        private long Salt { get; set; }
+        public long NaCL { get; set; }
 
         /// <summary>
         /// The salted and hashed password of this user
@@ -39,7 +39,7 @@ namespace Bastet.Database.Model
         {
             Username = name;
 
-            Salt = SecurityHelpers.GenerateSecureRandomNumber();
+            NaCL = SecurityHelpers.GenerateSecureRandomNumber();
             PasswordHash = ComputeSaltedHash(password);
         }
 
@@ -53,7 +53,7 @@ namespace Bastet.Database.Model
             //Get data to hash
             UTF32Encoding encoder = new UTF32Encoding();
             Byte[] passwordBytes = encoder.GetBytes(password);
-            Byte[] saltBytes = BitConverter.GetBytes(Salt);
+            Byte[] saltBytes = BitConverter.GetBytes(NaCL);
 
             // aggregate password and salt into one array
             Byte[] toHash = new Byte[passwordBytes.Length + saltBytes.Length];
