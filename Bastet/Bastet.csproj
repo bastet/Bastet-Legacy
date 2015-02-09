@@ -216,6 +216,9 @@
     <Compile Include="Database\Model\Session.cs" />
     <Compile Include="Database\Model\StringReading.cs" />
     <Compile Include="Database\Model\User.cs" />
+    <Compile Include="HttpServer\Csv\CsvProcessor.cs" />
+    <Compile Include="HttpServer\Csv\CsvResponse.cs" />
+    <Compile Include="HttpServer\Csv\CsvSerializer.cs" />
     <Compile Include="HttpServer\Modules\ApiMain.cs" />
     <Compile Include="HttpServer\NancyRootPath.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Concat.cs" />
@@ -260,6 +263,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
