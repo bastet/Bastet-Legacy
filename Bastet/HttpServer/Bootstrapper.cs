@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Data;
+using System.Text;
 using Bastet.Database.Model;
 using MoreLinq;
 using Nancy;
 using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
+using Nancy.LightningCache.Extensions;
+using Nancy.Routing;
 using Nancy.Serialization.JsonNet;
 using Nancy.TinyIoc;
 using Newtonsoft.Json;
@@ -22,14 +25,6 @@ namespace Bastet.HttpServer
         {
             get { return new NancyRootPath(); }
         }
-
-        //protected override NancyInternalConfiguration InternalConfiguration
-        //{
-        //    get
-        //    {
-        //        return NancyInternalConfiguration.WithOverrides(x => x.Serializers.Insert(0, typeof(JsonNetSerializer)));
-        //    }
-        //}
 
         public Bootstrapper(IDbConnectionFactory connectionFactory)
         {
@@ -66,6 +61,8 @@ namespace Bastet.HttpServer
             Nancy.Json.JsonSettings.MaxJsonLength = int.MaxValue;
 
             base.ApplicationStartup(container, pipelines);
+
+            this.EnableLightningCache(container.Resolve<IRouteResolver>(), ApplicationPipelines, new UrlHashKeyGenerator());
         }
 
         protected override void RequestStartup(TinyIoCContainer container, IPipelines pipelines, NancyContext context)
@@ -100,6 +97,18 @@ namespace Bastet.HttpServer
 
             var factory = container.Resolve<IDbConnectionFactory>();
             container.Register<IDbConnection>(factory.Open());
+        }
+    }
+
+    public class UrlHashKeyGenerator : Nancy.LightningCache.CacheKey.ICacheKeyGenerator
+    {
+        public string Get(Request request)
+        {
+            using (var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider())
+            {
+                var hash = md5.ComputeHash(Encoding.UTF32.GetBytes(request.Url.ToString()));
+                return Convert.ToBase64String(hash);
+            }
         }
     }
 }

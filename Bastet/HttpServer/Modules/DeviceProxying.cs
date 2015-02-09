@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
@@ -12,6 +13,7 @@ using CoAP;
 using CoAP.Http;
 using CoAP.Proxy;
 using Nancy;
+using Nancy.LightningCache.Extensions;
 using Nancy.Security;
 using ServiceStack.OrmLite;
 using Request = Nancy.Request;
@@ -72,7 +74,8 @@ namespace Bastet.HttpServer.Modules
                 return Response
                     .FromStream(httpResponse.OutputStream, httpResponse.ContentType)
                     .WithHeaders(httpResponse.Headers.ToArray())
-                    .WithStatusCode(httpResponse.StatusCode);
+                    .WithStatusCode(httpResponse.StatusCode)
+                    .AsCacheable(DateTime.Now + TimeSpan.FromSeconds(response.MaxAge));
             }, ct);
         }
 
@@ -154,17 +157,28 @@ namespace Bastet.HttpServer.Modules
         private class CoapDotNetHttpResponse
             : IHttpResponse
         {
-            private readonly List<Tuple<string, string>> _headers = new List<Tuple<string, string>>();
-            public IEnumerable<Tuple<string, string>> Headers { get { return _headers; } }
+            private readonly ConcurrentDictionary<string, string> _headers = new ConcurrentDictionary<string, string>();
+
+            public IEnumerable<Tuple<string, string>> Headers { get { return _headers.Select(a => new Tuple<string, string>(a.Key, a.Value)); } }
 
             public string ContentType
             {
-                get { return _headers.Single(a => a.Item1 == "content-type").Item2; }
+                get
+                {
+                    return GetHeader("content-type");
+                }
             }
 
             public void AppendHeader(string name, string value)
             {
-                _headers.Add(new Tuple<string, string>(name, value));
+                _headers.AddOrUpdate(name, value, (_, __) => value);
+            }
+
+            public string GetHeader(string name)
+            {
+                string value;
+                _headers.TryGetValue(name, out value);
+                return value;
             }
 
             private readonly MemoryStream _stream = new MemoryStream();
