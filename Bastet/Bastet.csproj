@@ -262,6 +262,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="HttpServer\Views\Root\Setup.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="sqlite3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
