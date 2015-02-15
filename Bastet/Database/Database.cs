@@ -1,4 +1,5 @@
-﻿using Bastet.Database.Model;
+﻿using System.Linq;
+using Bastet.Database.Model;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
 
@@ -6,6 +7,9 @@ namespace Bastet.Database
 {
     public class Database
     {
+        public const string DEFAULT_ADMINISTRATOR_USERNAME = "Administrator";
+        public const string DEFAULT_ADMINISTRATOR_PASSWORD = "password";
+
         private readonly IDbConnectionFactory _connectionFactory;
         public IDbConnectionFactory ConnectionFactory
         {
@@ -16,10 +20,8 @@ namespace Bastet.Database
         /// Set to true to recreate the database (losing all data)
         /// </summary>
         /// <param name="clean"></param>
-        /// <param name="adminUsername"></param>
-        /// <param name="adminPassword"></param>
         /// <param name="connectionString"></param>
-        public Database(bool clean = false, string adminUsername = null, string adminPassword = null, string connectionString = null)
+        public Database(bool clean = false, string connectionString = null)
         {
             _connectionFactory = new OrmLiteConnectionFactory(connectionString, SqliteDialect.Provider);
             using (var db = _connectionFactory.Open())
@@ -34,7 +36,7 @@ namespace Bastet.Database
 
                     typeof(User),
                     typeof(Session),
-                    typeof(Claim)
+                    typeof(Claim),
                 };
 
                 if (clean)
@@ -42,21 +44,26 @@ namespace Bastet.Database
                     foreach (var model in models)
                         db.CreateTable(true, model);
 
-                    if (adminUsername != null && adminPassword != null)
+                    using (var transaction = db.OpenTransaction())
                     {
-                        using (var transaction = db.OpenTransaction())
-                        {
-                            //Create admin
-                            var admin = new User(adminUsername, adminPassword);
-                            db.Save(admin);
+                        //Create admin user with null password
+                        var admin = new User(DEFAULT_ADMINISTRATOR_USERNAME, DEFAULT_ADMINISTRATOR_PASSWORD);
+                        db.Save(admin);
 
-                            //Give admin user permission to give out new permissions
-                            var claim = db.Where<Claim>(new { UserId = admin.Id, Name = "create-claim" });
-                            if (claim == null)
-                                db.Save(new Claim(admin, "create-claim"));
+                        //Create some sensible claims for an admin user
+                        string[] claims = {
+                            "create-claim",
+                            "list-users",
+                            "device-proxy-all",
+                            "device-details-all",
+                            "device-delete-all",
+                            "list-devices",
+                            "create-device",
+                        };
+                        foreach (var claim in claims)
+                            db.Save(new Claim(admin, claim));
 
-                            transaction.Commit();
-                        }
+                        transaction.Commit();
                     }
                 }
                 else

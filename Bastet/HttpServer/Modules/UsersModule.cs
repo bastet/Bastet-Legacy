@@ -28,6 +28,9 @@ namespace Bastet.HttpServer.Modules
             Post["/", runAsync: true] = CreateUser;
 
             Get["/{username}", runAsync: true] = GetUserDetails;
+
+            //Patch user, this can be used to change the username or password of this user
+            //Patch["/{username}", runAsync: true] = PatchUser;
         }
 
         private object SerializeUser(User user)

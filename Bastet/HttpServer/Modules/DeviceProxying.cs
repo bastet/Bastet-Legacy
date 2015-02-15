@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bastet.Database.Model;
@@ -17,6 +16,7 @@ using Nancy.LightningCache.Extensions;
 using Nancy.Security;
 using ServiceStack.OrmLite;
 using Request = Nancy.Request;
+using Response = CoAP.Response;
 
 namespace Bastet.HttpServer.Modules
 {
@@ -58,12 +58,22 @@ namespace Bastet.HttpServer.Modules
                 var coapRequest = HttpTranslator.GetCoapRequest(request, Request.Url.SiteBase, true);
                 coapRequest.URI = new Uri("coap://" + device.Url + "/" + (string) parameters.endpoint);
 
-                //Send COAP request
-                var responses = Observable.FromEventPattern<ResponseEventArgs>(a => coapRequest.Respond += a, a => coapRequest.Respond -= a);
+                //Setup response handler
+                Response response = null;
+                EventHandler<ResponseEventArgs> responseHandler = null;
+                responseHandler = (_, e) => {
+                    response = e.Response;
+                    coapRequest.Respond -= responseHandler;
+                };
+                coapRequest.Respond += responseHandler;
+
+                //send request
                 coapRequest.Send();
 
-                //Wait for response
-                var response = responses.First().EventArgs.Response;
+                while (response == null)
+                {
+                    Thread.Sleep(1);
+                }
 
                 //Turn COAP response into HTTP response
                 var httpResponse = new CoapDotNetHttpResponse();

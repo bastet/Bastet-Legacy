@@ -1,18 +1,16 @@
-﻿using System;
+﻿using CommandLine;
+using CommandLine.Text;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using CommandLine;
-using CommandLine.Text;
-using Newtonsoft.Json.Linq;
-using ServiceStack.Data;
 
 namespace Bastet
 {
     internal class Program
     {
-        private readonly Database.Database _db;
         private readonly HttpServer.HttpServer _server;
 
         private readonly bool _daemon = false;
@@ -24,9 +22,9 @@ namespace Bastet
             if (options.CleanStart)
                 options.InteractiveSetup();
 
-            _db = new Database.Database(options.CleanStart, options.AdminUsername, options.AdminPassword, options.ConnectionString);
+            Database.Database db = new Database.Database(options.CleanStart, options.ConnectionString);
 
-            _server = new HttpServer.HttpServer(options.HttpPort, _db.ConnectionFactory);
+            _server = new HttpServer.HttpServer(options.HttpPort, db.ConnectionFactory);
         }
 
         private void Run()
@@ -83,19 +81,6 @@ namespace Bastet
         public ushort HttpPort { get; set; }
         // ReSharper restore UnusedAutoPropertyAccessor.Global
 
-        [Option('a', "admin", Required = false,
-        HelpText = "The username of the admin user (only applied in conjunction with --setup)")]
-        // ReSharper disable UnusedAutoPropertyAccessor.Global
-        public string AdminUsername { get; set; }
-
-        // ReSharper restore UnusedAutoPropertyAccessor.Global
-
-        [Option('p', "password", Required = false,
-        HelpText = "The password of the admin user (only applied in conjunction with --setup)")]
-        // ReSharper disable UnusedAutoPropertyAccessor.Global
-        public string AdminPassword { get; set; }
-        // ReSharper restore UnusedAutoPropertyAccessor.Global
-
         [Option('c', "connection", Required = false, HelpText = "A database connection string to use")]
         public string ConnectionString { get; set; }
 
@@ -113,28 +98,8 @@ namespace Bastet
         #region interactive setup
         public void InteractiveSetup()
         {
-            if (AdminUsername == null)
-            {
-                Console.WriteLine("Enter username for Administrator account:");
-                Console.Write("> ");
-                AdminUsername = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(AdminUsername))
-                    AdminUsername = null;
-            }
-
-            if (AdminPassword == null)
-            {
-                Console.WriteLine("Enter password for Administrator account:");
-                Console.Write("> ");
-                AdminPassword = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(AdminPassword))
-                    AdminPassword = null;
-            }
-
             if (ConnectionString == null)
-            {
                 ConnectionString = InteractiveConnectionString();
-            }
         }
 
         private static string InteractiveConnectionString()

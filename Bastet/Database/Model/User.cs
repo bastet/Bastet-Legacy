@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
@@ -14,11 +15,6 @@ namespace Bastet.Database.Model
 // ReSharper disable UnusedAutoPropertyAccessor.Global
         public long Id { get; set; }
 // ReSharper restore UnusedAutoPropertyAccessor.Global
-
-        /// <summary>
-        /// The (other) unique ID of this user
-        /// </summary>
-        public Guid Guid { get; set; }
 
         /// <summary>
         /// The username for logging in
@@ -50,6 +46,9 @@ namespace Bastet.Database.Model
         /// <returns></returns>
         public string ComputeSaltedHash(string password)
         {
+            if (password == null)
+                throw new ArgumentNullException("password");
+
             //Get data to hash
             UTF32Encoding encoder = new UTF32Encoding();
             Byte[] passwordBytes = encoder.GetBytes(password);
