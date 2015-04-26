@@ -1,4 +1,12 @@
-﻿using System;
+﻿using Bastet.Database.Model;
+using CoAP;
+using CoAP.Http;
+using CoAP.Proxy;
+using Nancy;
+using Nancy.LightningCache.Extensions;
+using Nancy.Security;
+using ServiceStack.OrmLite;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -7,14 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bastet.Database.Model;
-using CoAP;
-using CoAP.Http;
-using CoAP.Proxy;
-using Nancy;
-using Nancy.LightningCache.Extensions;
-using Nancy.Security;
-using ServiceStack.OrmLite;
 using Request = Nancy.Request;
 using Response = CoAP.Response;
 
@@ -71,9 +71,7 @@ namespace Bastet.HttpServer.Modules
                 coapRequest.Send();
 
                 while (response == null)
-                {
                     Thread.Sleep(1);
-                }
 
                 //Turn COAP response into HTTP response
                 var httpResponse = new CoapDotNetHttpResponse();

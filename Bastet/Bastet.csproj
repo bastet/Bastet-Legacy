@@ -100,6 +100,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="ServiceStack.Common, Version=4.0.36.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ServiceStack.Common.4.0.36\lib\net40\ServiceStack.Common.dll</HintPath>
@@ -159,6 +162,7 @@
     <Compile Include="HttpServer\Csv\CsvResponse.cs" />
     <Compile Include="HttpServer\Csv\CsvSerializer.cs" />
     <Compile Include="HttpServer\Modules\ApiMain.cs" />
+    <Compile Include="HttpServer\Modules\WellKnownCore.cs" />
     <Compile Include="HttpServer\NancyRootPath.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Concat.cs" />
     <Compile Include="SecurityHelpers.cs" />
