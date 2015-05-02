@@ -1,4 +1,4 @@
-# Bastet - A Home Automation Server In C#
+# Bastet - A Home Automation Server In C\#
 
 Bastet is a server which acts as a proxy between [CoAP](https://datatracker.ietf.org/doc/draft-ietf-core-coap/) devices spread around the home and control scripts running on a server talking HTTP.
 
@@ -12,9 +12,31 @@ Bastet provides:
 
 To start a Bastet server you just need to start the application with two commandline parameters:
 
-    --setup true --http 58241
+    --http 58242 --connection="Data Source=Bastet.sqlite;Version=3;New=True;" --setup -lni
     
 This will start an interactive setup to configure Bastet. You can now visit [http://localhost:58241](http://localhost:58241) to see the Bastet status screen.
+
+#### http
+
+This is the port the http server will bind to
+
+#### connection
+
+This is the database connection string, the example is a sqlite database on disk called *Bastet.sqlite*.
+
+#### Setup
+
+This indicates that the node should be "setup" cleanly, i.e. tables will be created, and a new user/password will be inserted. The username will be "Administrator" and password will be "password".
+
+#### l, n and i
+
+These flags indicate which addresses should be bound by the HTTP server.
+
+-l will bind the "localhost" address
+
+-n will bind the netBIOS machine name address
+
+-i will bind all non localhost IPs
 
 ## API
 
