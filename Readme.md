@@ -1,4 +1,4 @@
-# Bastet - A Home Automation Server In C\#
+# Bastet - A Home Automation Server In C&#35;
 
 Bastet is a server which acts as a proxy between [CoAP](https://datatracker.ietf.org/doc/draft-ietf-core-coap/) devices spread around the home and control scripts running on a server talking HTTP.
 
