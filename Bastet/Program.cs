@@ -27,9 +27,9 @@ namespace Bastet
             _server = new HttpServer.HttpServer(options.HttpPort, db.ConnectionFactory);
         }
 
-        private void Run()
+        private void Run(Options options)
         {
-            _server.Start();
+            _server.Start(options);
 
             //Under mono if you deamonize a process a Console.ReadLine will cause an EOF 
             //so we need to block another way
@@ -53,7 +53,7 @@ namespace Bastet
                 options.LoadFromFile();
 
                 var p = new Program(options);
-                p.Run();
+                p.Run(options);
             }
             else
             {
@@ -88,6 +88,18 @@ namespace Bastet
         // ReSharper disable UnusedAutoPropertyAccessor.Global
         public bool Daemon { get; set; }
         // ReSharper restore UnusedAutoPropertyAccessor.Global
+
+        [Option('l', "bindlocalhost", Required = false, DefaultValue = false, HelpText = "Indicates if the localhost URL should be bound")]
+        public bool BindLocalhost { get; set; }
+
+        [Option('n', "bindname", Required = false, DefaultValue = false, HelpText = "Indicates if the machine name URL should be bound")]
+        public bool BindName { get; set; }
+
+        [Option('i', "bindips", Required = false, DefaultValue = false, HelpText = "Indicates if all the machine IPs should be bound")]
+        public bool BindIps { get; set; }
+
+        [Option('b', "bind", Required = false, DefaultValue = null, HelpText = "Indicates if all the machine IPs should be bound")]
+        public string ExplicitBind { get; set; }
 
         [HelpOption]
         public string GetUsage()
