@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using Nancy;
 using Nancy.Hosting.Self;
 using ServiceStack.Data;
@@ -20,18 +23,16 @@ namespace Bastet.HttpServer
 
         public void Start()
         {
-            var uri = new Uri("http://localhost:" + _httpPort);
-            var config = new HostConfiguration
-            {
-                RewriteLocalhost = false
-            };
-
             var bootstrapper = new Bootstrapper(_connectionFactory);
 
-            _host = new NancyHost(bootstrapper, config, uri);
+            var binds = Binds().ToArray();
+            _host = new NancyHost(bootstrapper, new HostConfiguration
+            {
+                RewriteLocalhost = false
+            }, binds);
             _host.Start();
 
-            Console.WriteLine(string.Format("Running HTTP Server on {0}", uri));
+            Console.WriteLine(string.Format("Running HTTP Server on {0} IPs: {1}", binds.Length, string.Join<Uri>("\n", binds)));
         }
 
         public void Shutdown()
@@ -42,6 +43,31 @@ namespace Bastet.HttpServer
                 _host.Dispose();
                 _host = null;
             }
+        }
+
+        private IEnumerable<Uri> Binds()
+        {
+            yield return Localhost();
+            yield return MachineName();
+            foreach (var uri in LocalIp())
+                yield return uri;
+        }
+
+        private Uri Localhost()
+        {
+            return new Uri("http://localhost:" + _httpPort);
+        }
+
+        private Uri MachineName()
+        {
+            return new Uri(string.Format("http://{0}:{1}", Environment.MachineName, _httpPort));
+        }
+
+        private IEnumerable<Uri> LocalIp()
+        {
+            return Dns.GetHostAddresses(Dns.GetHostName())
+                      .Where(IPAddress.IsLoopback)
+                      .Select(a => new Uri(string.Format("http://{0}:{1}", a, _httpPort)));
         }
     }
 }

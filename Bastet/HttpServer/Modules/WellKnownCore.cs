@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Bastet.Database.Model;
 using CoAP;
+using CoAP.Server.Resources;
 using Nancy;
 using System.Data;
 using System.Threading;

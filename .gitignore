@@ -6,3 +6,5 @@ _Resharper.Bastet/
 
 /Bastet/bin
 /Bastet/obj
+/Bastet/*.ncrunchproject
+/_NCrunch_Bastet/*.cache
