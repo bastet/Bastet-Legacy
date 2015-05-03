@@ -64,7 +64,7 @@ namespace Bastet
 
     public class Options
     {
-        [Option('o', "options", Required = false, HelpText = "Path to a file of options (overrides commandline arguments)")]
+        [Option('o', "options", Required = false, DefaultValue = "config.json", HelpText = "Path to a file of options (overrides commandline arguments)")]
         // ReSharper disable MemberCanBePrivate.Global
         // ReSharper disable UnusedAutoPropertyAccessor.Global
         public string OptionsPath { get; set; }

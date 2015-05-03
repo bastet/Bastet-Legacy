@@ -56,7 +56,7 @@ namespace Bastet.HttpServer.Modules
 
             return _connection
                 .Select<Device>()
-                .Select(d => ModuleHelpers.CreateUrl(Request, PATH, d.Id.ToString(CultureInfo.InvariantCulture)))
+                .Select(SerializeDevice)
                 .ToArray();
         }
 
