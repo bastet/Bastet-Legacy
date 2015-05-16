@@ -1,4 +1,5 @@
-﻿using CommandLine;
+﻿using System.Reflection;
+using CommandLine;
 using CommandLine.Text;
 using Newtonsoft.Json.Linq;
 using System;
@@ -47,30 +48,23 @@ namespace Bastet
 
         public static void Main(string[] args)
         {
-            var options = new Options();
-            if (Parser.Default.ParseArguments(args, options))
-            {
-                options.LoadFromFile();
+            // Move into the directory of the exe file, important for unix like environments
+            // ReSharper disable once PossibleNullReferenceException
+            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).ToString(CultureInfo.InvariantCulture);
 
+            var options = new Options();
+            if (options.LoadFromFile() || Parser.Default.ParseArguments(args, options))
+            {
                 var p = new Program(options);
                 p.Run(options);
             }
             else
-            {
                 HelpText.DefaultParsingErrorsHandler(options, null);
-            }
         }
     }
 
     public class Options
     {
-        [Option('o', "options", Required = false, DefaultValue = "config.json", HelpText = "Path to a file of options (overrides commandline arguments)")]
-        // ReSharper disable MemberCanBePrivate.Global
-        // ReSharper disable UnusedAutoPropertyAccessor.Global
-        public string OptionsPath { get; set; }
-        // ReSharper restore UnusedAutoPropertyAccessor.Global
-        // ReSharper restore MemberCanBePrivate.Global
-
         [Option('s', "setup", Required = false, HelpText = "If set, clear all data from the database on startup")]
         // ReSharper disable UnusedAutoPropertyAccessor.Global
         public bool CleanStart { get; set; }
@@ -199,18 +193,15 @@ namespace Bastet
         #endregion
 
         #region load from file
-        public void LoadFromFile()
+        public bool LoadFromFile()
         {
-            if (OptionsPath == null)
-                return;
-
-            if (!File.Exists(OptionsPath))
+            if (!File.Exists("config.json"))
             {
-                Console.WriteLine("Could not find expected options file at path {0}", OptionsPath);
-                return;
+                Console.WriteLine("Could not find expected options file at path config.json");
+                return false;
             }
 
-            var json = JObject.Parse(File.ReadAllText(OptionsPath));
+            var json = JObject.Parse(File.ReadAllText("config.json"));
 
             //Select properties marked with the OptionAttribute
             var properties = GetType()
@@ -225,6 +216,8 @@ namespace Bastet
                 if (json.TryGetValue(property.attr.LongName, out value))
                     property.prop.SetValue(this, value.ToObject(property.prop.PropertyType), null);
             }
+
+            return true;
         }
         #endregion
     }

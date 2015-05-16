@@ -61,7 +61,7 @@ namespace Bastet.Database.Model
 
             // Hash the password
             using (SHA512Managed sha1 = new SHA512Managed())
-                return encoder.GetString(sha1.ComputeHash(toHash));
+                return BitConverter.ToString(sha1.ComputeHash(toHash));
         }
     }
 }

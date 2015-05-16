@@ -49,7 +49,7 @@ namespace Bastet.HttpServer.Modules
                 return Proxy(parameters, ct);
 
             this.RequiresAuthentication();
-            this.RequiresAnyClaim(new[] { "device-proxy-all", string.Format("device-proxy-{0}", (int)parameters.id) });
+            this.RequiresAnyClaim(new[] { "superuser", "device-proxy-all", string.Format("device-proxy-{0}", (int)parameters.id) });
 
             var device = _connection.SingleById<Device>((int)parameters.id);
             if (device == null)
@@ -82,7 +82,7 @@ namespace Bastet.HttpServer.Modules
             return Task<dynamic>.Factory.StartNew(() =>
             {
                 this.RequiresAuthentication();
-                this.RequiresAnyClaim(new[] { "device-proxy-all", string.Format("device-proxy-{0}", (int)parameters.id) });
+                this.RequiresAnyClaim(new[] { "superuser", "device-proxy-all", string.Format("device-proxy-{0}", (int)parameters.id) });
 
                 var device = _connection.SingleById<Device>((int) parameters.id);
                 if (device == null)

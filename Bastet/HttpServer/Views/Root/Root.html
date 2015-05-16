@@ -1,19 +1,52 @@
 ﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-	<head>
-		<title>Bastet</title>
-	</head>
-	<body>
-	    <h1>Bastet</h1>
-        <br />
-	    <section>
-	        On this page we need:
-	        <ul>
-	            <li>Login Form</li>
-	            <li>Links to help pages (particularly tutorials on how to do common tasks)</li>
-	            <li>Basic house status overview (this should dominate the screen)</li>
-                <li>Settings link (when logged in)</li>
-	        </ul>
-	    </section>
-	</body>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <title>Bastet</title>
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Welcome To Bastet</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h3>Login</h3>
+            <form id="submit-login">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="UserName" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="Password" placeholder="Password">
+                </div>
+                <input type="submit" class="btn btn-default" value="submit" />
+            </form>
+        </div>
+        <script>
+            $(function () {
+                $("#submit-login").submit(function (event) {
+                    event.preventDefault();
+                    $.ajax({
+                        url: "/api/authentication",
+                        type: "POST",
+                        data: $("#submit-login").serialize(),
+                        success: function () {
+                            window.location.reload();
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        },
+                    });
+                });
+            });
+        </script>
+
+    </div>
+</body>
 </html>

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bastet.Database.Model;
 using Nancy;
 using Nancy.Security;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ServiceStack.OrmLite;
 
 namespace Bastet.HttpServer.Modules
@@ -29,8 +32,8 @@ namespace Bastet.HttpServer.Modules
 
             Get["/{username}", runAsync: true] = GetUserDetails;
 
-            //Patch user, this can be used to change the username or password of this user
-            //Patch["/{username}", runAsync: true] = PatchUser;
+            //Patch user, this can be used to change the password of this user
+            Patch["/{username}", runAsync: true] = PatchUser;
         }
 
         private object SerializeUser(User user)
@@ -47,7 +50,7 @@ namespace Bastet.HttpServer.Modules
             return Task<dynamic>.Factory.StartNew(() =>
             {
                 this.RequiresAuthentication();
-                this.RequiresClaims(new[] {"list-users"});
+                this.RequiresAnyClaim(new[] {"superuser", "list-users"});
 
                 return _connection
                     .Select<User>()
@@ -60,8 +63,11 @@ namespace Bastet.HttpServer.Modules
         {
             return Task<dynamic>.Factory.StartNew(() =>
             {
-                var userName = (string)(Request.Query.UserName ?? Request.Form.UserName);
-                var password = (string)(Request.Query.Password ?? Request.Form.Password);
+                this.RequiresAuthentication();
+                this.RequiresAnyClaim(new[] { "superuser", "create-user" });
+
+                var userName = (string)Request.Query.UserName ?? (string)Request.Form.UserName;
+                var password = (string)Request.Query.Password ?? (string)Request.Form.Password;
 
                 using (var transaction = _connection.OpenTransaction())
                 {
@@ -76,7 +82,11 @@ namespace Bastet.HttpServer.Modules
 
                     //Create a new user
                     user = new User(userName, password);
+
                     _connection.Save(user);
+
+                    // HACK: TEMP ADDING SUPERUSER CLAIM
+                    _connection.Save(new Claim(user, "superuser"));
 
                     //Save any changes made
                     transaction.Commit();
@@ -91,6 +101,8 @@ namespace Bastet.HttpServer.Modules
         {
             return Task<dynamic>.Factory.StartNew(() =>
             {
+                this.RequiresAuthentication();
+
                 var username = (string)parameters.username;
                 var user = _connection.SingleWhere<User>("Username", username);
                 if (user == null)
@@ -98,6 +110,43 @@ namespace Bastet.HttpServer.Modules
                     return Negotiate
                         .WithModel(new { Error = "No Such User Exists" })
                         .WithStatusCode(HttpStatusCode.NotFound);
+                }
+
+                return SerializeUser(user);
+            }, ct);
+        }
+
+        private Task<dynamic> PatchUser(dynamic parameters, CancellationToken ct)
+        {
+            return Task<dynamic>.Factory.StartNew(() =>
+            {
+                this.RequiresAuthentication();
+
+                var username = (string)parameters.username;
+                if (username != Context.CurrentUser.UserName)
+                {
+                    return Negotiate
+                        .WithModel(new { Error = "Must Be Logged In To Change Password" })
+                        .WithStatusCode(HttpStatusCode.Unauthorized);
+                }
+
+                var user = _connection.SingleWhere<User>("Username", username);
+                if (user == null)
+                {
+                    return Negotiate
+                        .WithModel(new { Error = "No Such User Exists" })
+                        .WithStatusCode(HttpStatusCode.NotFound);
+                }
+
+                using (var reader = new StreamReader(Request.Body))
+                {
+                    var json = JObject.Load(new JsonTextReader(reader));
+                    JToken password;
+                    if (json.TryGetValue("Password", out password))
+                    {
+                        user.PasswordHash = user.ComputeSaltedHash((string) password);
+                        _connection.Save(user);
+                    }
                 }
 
                 return SerializeUser(user);

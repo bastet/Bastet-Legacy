@@ -42,7 +42,7 @@ namespace Bastet.HttpServer.Modules
 
                 //Anyone can list their own claims
                 if (Context.CurrentUser.UserName != (string)parameters.username)
-                    this.RequiresClaims(new[] { "list-claims" });
+                    this.RequiresAnyClaim(new[] { "superuser", "list-claims" });
 
                 return Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection).Select(SerializeClaim).ToArray();
             }, ct);
@@ -53,7 +53,7 @@ namespace Bastet.HttpServer.Modules
             return Task<dynamic>.Factory.StartNew(() =>
             {
                 this.RequiresAuthentication();
-                this.RequiresClaims(new[] { "create-claim" });
+                this.RequiresAnyClaim(new[] { "superuser", "create-claim" });
 
                 using (var transaction = _connection.OpenTransaction())
                 {
@@ -86,7 +86,7 @@ namespace Bastet.HttpServer.Modules
             return Task<dynamic>.Factory.StartNew(() =>
             {
                 this.RequiresAuthentication();
-                this.RequiresClaims(new[] { "delete-claim" });
+                this.RequiresAnyClaim(new[] { "superuser", "delete-claim" });
 
                 using (var transaction = _connection.OpenTransaction())
                 {

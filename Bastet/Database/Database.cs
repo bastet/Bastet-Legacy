@@ -52,13 +52,7 @@ namespace Bastet.Database
 
                         //Create some sensible claims for an admin user
                         string[] claims = {
-                            "create-claim",
-                            "list-users",
-                            "device-proxy-all",
-                            "device-details-all",
-                            "device-delete-all",
-                            "list-devices",
-                            "create-device",
+                            "superuser"
                         };
                         foreach (var claim in claims)
                             db.Save(new Claim(admin, claim));

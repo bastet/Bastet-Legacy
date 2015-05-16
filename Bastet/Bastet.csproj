@@ -216,6 +216,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

@@ -52,7 +52,7 @@ namespace Bastet.HttpServer.Modules
         private dynamic ListDevices(dynamic parameters)
         {
             this.RequiresAuthentication();
-            this.RequiresClaims(new[] { "list-devices" });
+            this.RequiresAnyClaim(new[] { "superuser", "list-devices" });
 
             return _connection
                 .Select<Device>()
@@ -63,7 +63,7 @@ namespace Bastet.HttpServer.Modules
         private dynamic CreateDevice(dynamic parameters)
         {
             this.RequiresAuthentication();
-            this.RequiresClaims(new[] { "create-device" });
+            this.RequiresAnyClaim(new[] { "superuser", "create-device" });
 
             var device = this.Bind<Device>("Id");
             _connection.Save(device);
@@ -79,7 +79,7 @@ namespace Bastet.HttpServer.Modules
         private dynamic DeviceDetails(dynamic parameters)
         {
             this.RequiresAuthentication();
-            this.RequiresAnyClaim(new[] { "device-details-all", string.Format("device-details-{0}", (int)parameters.id) });
+            this.RequiresAnyClaim(new[] { "superuser", "device-details-all", string.Format("device-details-{0}", (int)parameters.id) });
 
             return SerializeDevice(_connection.SingleById<Device>((int)parameters.id)) ?? HttpStatusCode.NotFound;
         }
@@ -87,7 +87,7 @@ namespace Bastet.HttpServer.Modules
         private dynamic DeleteDevice(dynamic parameters)
         {
             this.RequiresAuthentication();
-            this.RequiresAnyClaim(new[] { "device-delete-all", string.Format("device-delete-{0}", (int)parameters.id) });
+            this.RequiresAnyClaim(new[] { "superuser", "device-delete-all", string.Format("device-delete-{0}", (int)parameters.id) });
 
             return SerializeDevice(ModuleHelpers.Delete<Device>(_connection, (int)parameters.id)) ?? HttpStatusCode.NoContent;
         }

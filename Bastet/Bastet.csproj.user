@@ -7,6 +7,7 @@
     <StartArguments>-h 58241 --connection="Data Source=bastet.sqlite%3bVersion=3%3bNew=True%3b"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <StartArguments>--http 58242 --connection="Data Source=Bastet.sqlite%3bVersion=3%3bNew=True%3b" --setup -l</StartArguments>
+    <StartArguments>
+    </StartArguments>
   </PropertyGroup>
 </Project>

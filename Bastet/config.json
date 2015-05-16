@@ -1,0 +1,6 @@
+﻿{
+	"http": 58242,
+	"connection": "Data Source=Bastet.sqlite;Version=3;New=True;",
+	"setup": true,
+	"bindlocalhost": true,
+}
