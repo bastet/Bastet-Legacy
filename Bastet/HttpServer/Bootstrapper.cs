@@ -69,13 +69,10 @@ namespace Bastet.HttpServer
             StatelessAuthentication.Enable(pipelines, new StatelessAuthenticationConfiguration(ctx =>
             {
                 string sessionKey;
-                if (!ctx.Request.Cookies.TryGetValue("Bastet_Session_Key", out sessionKey))
-                {
-                    if (ctx.Request.Query.sessionkey.HasValue)
-                        sessionKey = (string)ctx.Request.Query.sessionkey;
-                    else
-                        return null;
-                }
+                if (ctx.Request.Query.SessionKey.HasValue)
+                    sessionKey = (string)ctx.Request.Query.sessionkey;
+                else if (!ctx.Request.Cookies.TryGetValue("Bastet_Session_Key", out sessionKey))
+                    return null;
 
                 var connection = container.Resolve<IDbConnection>();
 

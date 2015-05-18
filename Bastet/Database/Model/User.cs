@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using MoreLinq;
 using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
@@ -48,17 +51,15 @@ namespace Bastet.Database.Model
             if (password == null)
                 throw new ArgumentNullException("password");
 
-            //Get data to hash
+            //Encoder for password (text->bytes)
             UTF32Encoding encoder = new UTF32Encoding();
-            Byte[] passwordBytes = encoder.GetBytes(password);
-            Byte[] saltBytes = BitConverter.GetBytes(Salt);
 
-            // aggregate password and salt into one array
-            Byte[] toHash = new Byte[passwordBytes.Length + saltBytes.Length];
-            Array.Copy(passwordBytes, 0, toHash, 0, passwordBytes.Length);
-            Array.Copy(saltBytes, 0, toHash, passwordBytes.Length, saltBytes.Length);
-
-            // Hash the password
+            //Put password bytes and then saly bytes into byte array
+            var toHash = encoder.GetBytes(password)
+                .Concat(BitConverter.GetBytes(Salt))
+                .ToArray();
+            
+            // Hash the salted password
             using (SHA512Managed sha1 = new SHA512Managed())
                 return BitConverter.ToString(sha1.ComputeHash(toHash)).Replace("-", "");
         }
