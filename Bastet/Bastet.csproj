@@ -176,6 +176,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Backends\BackendFactory.cs" />
+    <Compile Include="Backends\BackendRequest.cs" />
+    <Compile Include="Backends\Coap\CoapBackend.cs" />
+    <Compile Include="Backends\IBackend.cs" />
+    <Compile Include="Backends\BackendDescription.cs" />
+    <Compile Include="Backends\IBackendResponse.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\Model\BlobReading.cs" />
     <Compile Include="Database\Model\Claim.cs" />
@@ -190,6 +196,7 @@
     <Compile Include="HttpServer\Modules\WellKnownCore.cs" />
     <Compile Include="HttpServer\NancyRootPath.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Concat.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="SecurityHelpers.cs" />
     <Compile Include="GoogleAuthenticator.cs" />
     <Compile Include="HttpServer\Bootstrapper.cs" />
@@ -238,6 +245,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

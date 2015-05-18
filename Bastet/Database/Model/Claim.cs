@@ -1,4 +1,5 @@
-﻿using ServiceStack.DataAnnotations;
+﻿using Bastet.Annotations;
+using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
 {
@@ -8,7 +9,7 @@ namespace Bastet.Database.Model
         /// The unique ID of this device
         /// </summary>
         [AutoIncrement]
-        public long Id { get; set; }
+        public long Id { get; [UsedImplicitly]set; }
 
         /// <summary>
         /// The ID of the user this session is for

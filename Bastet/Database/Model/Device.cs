@@ -1,4 +1,5 @@
-﻿using ServiceStack.DataAnnotations;
+﻿using Bastet.Annotations;
+using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
 {
@@ -8,15 +9,16 @@ namespace Bastet.Database.Model
         /// The unique ID of this device
         /// </summary>
         [AutoIncrement]
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-        public long Id { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
+        public long Id { get; [UsedImplicitly]set; }
 
         /// <summary>
-        /// The URL to speakto this device (using CoAP)
+        /// The URL to speak to this device
         /// </summary>
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-        public string Url { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
+        public string Url { get; [UsedImplicitly]set; }
+
+        /// <summary>
+        /// The type of the backen to use to communicate with this device
+        /// </summary>
+        public string Backend { get; [UsedImplicitly]set; }
     }
 }

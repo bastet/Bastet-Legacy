@@ -1,4 +1,5 @@
-﻿using ServiceStack.DataAnnotations;
+﻿using Bastet.Annotations;
+using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
 {
@@ -8,15 +9,11 @@ namespace Bastet.Database.Model
         /// The unique ID of this reading
         /// </summary>
         [AutoIncrement]
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-        public long Id { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
+        public long Id { get; [UsedImplicitly]set; }
 
         /// <summary>
         /// The device this sensor is attached to
         /// </summary>
-// ReSharper disable UnusedAutoPropertyAccessor.Global
         public long DeviceId { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
     }
 }

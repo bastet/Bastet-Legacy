@@ -8,3 +8,4 @@ _Resharper.Bastet/
 /Bastet/obj
 /Bastet/*.ncrunchproject
 /_NCrunch_Bastet/*.cache
+/*.DotSettings

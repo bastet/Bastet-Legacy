@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using Bastet.Annotations;
 using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
@@ -10,9 +11,7 @@ namespace Bastet.Database.Model
         /// The unique ID of this device
         /// </summary>
         [AutoIncrement]
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-        public long Id { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
+        public long Id { get; [UsedImplicitly]set; }
 
         /// <summary>
         /// The API key of this session

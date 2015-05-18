@@ -1,4 +1,5 @@
 ﻿using System;
+using Bastet.Annotations;
 using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
@@ -10,16 +11,12 @@ namespace Bastet.Database.Model
         /// The unique ID of this reading
         /// </summary>
         [AutoIncrement]
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-        public long Id { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
+        public long Id { get; [UsedImplicitly]set; }
 
         /// <summary>
         /// The timestamp of this reading
         /// </summary>
-// ReSharper disable UnusedAutoPropertyAccessor.Global
         public DateTime Timestamp { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
 
         /// <summary>
         /// The sensor which took this reading
@@ -29,8 +26,6 @@ namespace Bastet.Database.Model
         /// <summary>
         /// The value of this reading
         /// </summary>
-// ReSharper disable UnusedAutoPropertyAccessor.Global
         public string Value { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
     }
 }

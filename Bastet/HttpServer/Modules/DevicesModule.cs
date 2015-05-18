@@ -1,4 +1,5 @@
-﻿using Bastet.Database.Model;
+﻿using Bastet.Backends;
+using Bastet.Database.Model;
 using Nancy;
 using Nancy.ModelBinding;
 using Nancy.Security;
@@ -40,6 +41,7 @@ namespace Bastet.HttpServer.Modules
                 Id = device.Id,
                 Url = device.Url,
                 Proxy = ModuleHelpers.CreateUrl(Request, DevicesProxyModule.PATH.Replace("{id}", device.Id.ToString(CultureInfo.InvariantCulture))),
+                Backend = device.Backend,
                 Resources = ModuleHelpers.CreateUrl(Request, DevicesProxyModule.PATH.Replace("{id}", device.Id.ToString(CultureInfo.InvariantCulture)), ".well-known/core")
             };
         }
@@ -66,6 +68,9 @@ namespace Bastet.HttpServer.Modules
             this.RequiresAnyClaim(new[] { "superuser", "create-device" });
 
             var device = this.Bind<Device>("Id");
+
+            var backendType = BackendFactory.BackendType(device.Backend);
+            device.Backend = backendType == null ? null : backendType.AssemblyQualifiedName;
             _connection.Save(device);
 
             return SerializeDevice(device);

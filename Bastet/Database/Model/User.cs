@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using MoreLinq;
+using Bastet.Annotations;
 using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
@@ -14,9 +13,7 @@ namespace Bastet.Database.Model
         /// The unique ID of this user
         /// </summary>
         [AutoIncrement]
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-        public long Id { get; set; }
-// ReSharper restore UnusedAutoPropertyAccessor.Global
+        public long Id { get; [UsedImplicitly]set; }
 
         /// <summary>
         /// The username for logging in
