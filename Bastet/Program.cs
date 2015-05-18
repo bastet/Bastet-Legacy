@@ -152,26 +152,26 @@ namespace Bastet
                     var num = int.Parse(key.KeyChar.ToString(CultureInfo.InvariantCulture));
                     highlighted = (num - 1) < lines.Length ? (num - 1) : highlighted;
                 }
-                else if (key.Key == ConsoleKey.UpArrow)
+                else switch (key.Key)
                 {
-                    highlighted = highlighted - 1;
-                    if (highlighted == -1)
-                        highlighted = lines.Length - 1;
-                }
-                else if (key.Key == ConsoleKey.DownArrow)
-                {
-                    highlighted = (highlighted + 1) % lines.Length;
-                }
-                else if (key.Key == ConsoleKey.Enter)
-                {
-                    var str = lines[highlighted].Specific();
-                    Console.WriteLine(" - Using Configured Connection String, Next Time Run With:");
-                    Console.WriteLine();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\t--connection='{0}'", str);
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine();
-                    return str;
+                    case ConsoleKey.UpArrow:
+                        highlighted = highlighted - 1;
+                        if (highlighted == -1)
+                            highlighted = lines.Length - 1;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        highlighted = (highlighted + 1) % lines.Length;
+                        break;
+                    case ConsoleKey.Enter: {
+                        var str = lines[highlighted].Specific();
+                        Console.WriteLine(" - Using Configured Connection String, Next Time Run With:");
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("\t--connection='{0}'", str);
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine();
+                        return str;
+                    }
                 }
             }
         }

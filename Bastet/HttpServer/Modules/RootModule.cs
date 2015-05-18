@@ -2,7 +2,6 @@
 using Bastet.Database.Model;
 using Nancy;
 using System.Data;
-using ServiceStack;
 using ServiceStack.OrmLite;
 
 namespace Bastet.HttpServer.Modules

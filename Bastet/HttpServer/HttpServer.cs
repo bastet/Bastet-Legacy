@@ -82,10 +82,13 @@ namespace Bastet.HttpServer
 
         private static Uri ToUri(IPAddress addr, ushort port)
         {
-            if (addr.AddressFamily == AddressFamily.InterNetwork)
-                return new Url(string.Format("http://{0}:{1}", addr, port));
-            else if (addr.AddressFamily == AddressFamily.InterNetworkV6)
-                return new Url(string.Format("http://[{0}]:{1}", addr, port));
+            switch (addr.AddressFamily)
+            {
+                case AddressFamily.InterNetwork:
+                    return new Url(string.Format("http://{0}:{1}", addr, port));
+                case AddressFamily.InterNetworkV6:
+                    return new Url(string.Format("http://[{0}]:{1}", addr, port));
+            }
 
             return null;
         }

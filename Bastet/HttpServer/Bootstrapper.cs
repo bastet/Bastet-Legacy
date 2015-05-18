@@ -8,7 +8,6 @@ using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
 using Nancy.LightningCache.Extensions;
 using Nancy.Routing;
-using Nancy.Serialization.JsonNet;
 using Nancy.TinyIoc;
 using Newtonsoft.Json;
 using ServiceStack.Data;
@@ -83,6 +82,7 @@ namespace Bastet.HttpServer
                 var session = connection.SingleWhere<Session>("SessionKey", sessionKey);
                 if (session == null)
                     return null;
+
                 var user = connection.SingleById<User>(session.UserId);
                 if (user == null)
                     return null;

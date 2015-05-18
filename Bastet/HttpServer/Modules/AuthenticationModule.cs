@@ -55,8 +55,8 @@ namespace Bastet.HttpServer.Modules
                 else
                 {
                     //If no basic auth data was supplied, pull data from query string or form
-                    userName = (string) (Request.Query.username ?? Request.Form.username);
-                    password = (string) (Request.Query.password ?? Request.Form.password);
+                    userName = (string)Request.Query.UserName ?? (string)Request.Form.UserName;
+                    password = (string)Request.Query.Password ?? (string)Request.Form.Password;
                 }
 
                 using (var transaction = _connection.OpenTransaction())
@@ -66,9 +66,8 @@ namespace Bastet.HttpServer.Modules
                     if (userIdentity == null)
                     {
                         return Negotiate
-                            .WithModel(new { Error = "Incorrect Username Or Password" })
-                            .WithStatusCode(HttpStatusCode.Unauthorized)
-                            .WithHeader("WWW-Authenticate", "Basic");
+                            .WithModel(new {Error = "Incorrect Username Or Password"})
+                            .WithStatusCode(HttpStatusCode.Unauthorized);
                     }
 
                     //Create or find a session for this user

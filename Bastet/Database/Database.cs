@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Bastet.Database.Model;
+﻿using Bastet.Database.Model;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
 

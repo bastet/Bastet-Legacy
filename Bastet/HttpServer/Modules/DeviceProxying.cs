@@ -4,7 +4,6 @@ using CoAP.Http;
 using CoAP.Proxy;
 using Nancy;
 using Nancy.LightningCache.Extensions;
-using Nancy.Responses.Negotiation;
 using Nancy.Security;
 using ServiceStack.OrmLite;
 using System;
@@ -43,38 +42,40 @@ namespace Bastet.HttpServer.Modules
             Delete["/", runAsync: true] = Delete["/{endpoint*}", runAsync: true] = Proxy;
         }
 
-        private async Task<dynamic> ProxyWellKnownCore(dynamic parameters, CancellationToken ct)
+        private Task<dynamic> ProxyWellKnownCore(dynamic parameters, CancellationToken ct)
         {
-            if (Request.Headers.ContentType.ToLowerInvariant() == "application/link-format")
-                return Proxy(parameters, ct);
+            return Task.Factory.StartNew(() => {
+                if (Request.Headers.ContentType.ToLowerInvariant() == "application/link-format")
+                    return Proxy(parameters, ct);
 
-            this.RequiresAuthentication();
-            this.RequiresAnyClaim(new[] { "superuser", "device-proxy-all", string.Format("device-proxy-{0}", (int)parameters.id) });
+                this.RequiresAuthentication();
+                this.RequiresAnyClaim(new[] {"superuser", "device-proxy-all", string.Format("device-proxy-{0}", (int) parameters.id)});
 
-            var device = _connection.SingleById<Device>((int)parameters.id);
-            if (device == null)
+                var device = _connection.SingleById<Device>((int) parameters.id);
+                if (device == null)
+                    return Negotiate
+                        .WithStatusCode(HttpStatusCode.NotFound)
+                        .WithModel(new {Error = string.Format("Unknown Device ID ({0})", parameters.id)});
+
+                //Proxy request, and fail as necessary
+                var response = Proxy(new CoapDotNetHttpRequest(Request, device.Url + "/.well-known/core"), new Uri("coap://" + device.Url + "/.well-known/core"));
+                if (response == null)
+                    return Negotiate.WithStatusCode(HttpStatusCode.GatewayTimeout);
+                if (response.StatusCode != 200)
+                    return (HttpStatusCode) response.StatusCode;
+
+                //Read body
+                response.OutputStream.Seek(0, SeekOrigin.Begin);
+                var r = new StreamReader(response.OutputStream);
+
+                //Serialize link format
+                var c = new LinkFormatParser.LinkCollection(r.ReadToEnd());
+
+                //Return link format model and let content negotiation serialize into correct format
                 return Negotiate
-                    .WithStatusCode(HttpStatusCode.NotFound)
-                    .WithModel(new { Error = string.Format("Unknown Device ID ({0})", parameters.id) });
-
-            //Proxy request, and fail as necessary
-            var response = Proxy(new CoapDotNetHttpRequest(Request, device.Url + "/.well-known/core"), new Uri("coap://" + device.Url + "/.well-known/core"));
-            if (response == null)
-                return Negotiate.WithStatusCode(HttpStatusCode.GatewayTimeout);
-            if (response.StatusCode != 200)
-                return (HttpStatusCode)response.StatusCode;
-
-            //Read body
-            response.OutputStream.Seek(0, SeekOrigin.Begin);
-            var r = new StreamReader(response.OutputStream);
-
-            //Serialize link format
-            var c = new LinkFormatParser.LinkCollection(r.ReadToEnd());
-
-            //Return link format model and let content negotiation serialize into correct format
-            return Negotiate
-                .WithModel(c.ToArray())
-                .WithHeaders(response.Headers.Where(a => a.Item1.ToLowerInvariant() != "content-type").ToArray());
+                    .WithModel(c.ToArray())
+                    .WithHeaders(response.Headers.Where(a => a.Item1.ToLowerInvariant() != "content-type").ToArray());
+            }, ct);
         }
 
         private Task<dynamic> Proxy(dynamic parameters, CancellationToken ct)

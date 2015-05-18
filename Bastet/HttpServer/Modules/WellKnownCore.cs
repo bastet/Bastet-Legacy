@@ -1,5 +1,4 @@
 ﻿using Bastet.Database.Model;
-using CoAP;
 using Nancy;
 using Nancy.Security;
 using RestSharp;

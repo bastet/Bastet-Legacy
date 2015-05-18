@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
@@ -24,7 +23,7 @@ namespace Bastet.Database.Model
         /// <summary>
         /// The password salt for this user
         /// </summary>
-        public long NaCL { get; set; }
+        public long Salt { get; set; }
 
         /// <summary>
         /// The salted and hashed password of this user
@@ -35,7 +34,7 @@ namespace Bastet.Database.Model
         {
             Username = name;
 
-            NaCL = SecurityHelpers.GenerateSecureRandomNumber();
+            Salt = SecurityHelpers.GenerateSecureRandomNumber();
             PasswordHash = ComputeSaltedHash(password);
         }
 
@@ -52,16 +51,16 @@ namespace Bastet.Database.Model
             //Get data to hash
             UTF32Encoding encoder = new UTF32Encoding();
             Byte[] passwordBytes = encoder.GetBytes(password);
-            Byte[] saltBytes = BitConverter.GetBytes(NaCL);
+            Byte[] saltBytes = BitConverter.GetBytes(Salt);
 
             // aggregate password and salt into one array
             Byte[] toHash = new Byte[passwordBytes.Length + saltBytes.Length];
             Array.Copy(passwordBytes, 0, toHash, 0, passwordBytes.Length);
-            Array.Copy(saltBytes, 0, toHash, saltBytes.Length, saltBytes.Length);
+            Array.Copy(saltBytes, 0, toHash, passwordBytes.Length, saltBytes.Length);
 
             // Hash the password
             using (SHA512Managed sha1 = new SHA512Managed())
-                return BitConverter.ToString(sha1.ComputeHash(toHash));
+                return BitConverter.ToString(sha1.ComputeHash(toHash)).Replace("-", "");
         }
     }
 }
