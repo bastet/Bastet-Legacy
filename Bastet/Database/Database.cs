@@ -17,26 +17,19 @@ namespace Bastet.Database
 
         /// <summary>
         /// Set to true to recreate the database (losing all data)
-        /// </summary>
-        /// <param name="clean"></param>
         /// <param name="connectionString"></param>
-        public Database(bool clean = false, string connectionString = null)
+        public Database(string connectionString = null)
         {
             _connectionFactory = new OrmLiteConnectionFactory(connectionString, SqliteDialect.Provider);
             using (var db = _connectionFactory.Open())
             {
-                var models = new[]
-                {
-                    typeof(Device),
-                    typeof(User),
-                    typeof(Session),
-                    typeof(Claim),
-                };
+                db.CreateTableIfNotExists<Device>();
+                db.CreateTableIfNotExists<Session>();
+                db.CreateTableIfNotExists<Claim>();
 
-                if (clean)
+                if (!db.TableExists<User>())
                 {
-                    foreach (var model in models)
-                        db.CreateTable(true, model);
+                    db.CreateTable<User>();
 
                     using (var transaction = db.OpenTransaction())
                     {
@@ -53,11 +46,6 @@ namespace Bastet.Database
 
                         transaction.Commit();
                     }
-                }
-                else
-                {
-                    foreach (var model in models)
-                        db.CreateTableIfNotExists(model);
                 }
             }
         }

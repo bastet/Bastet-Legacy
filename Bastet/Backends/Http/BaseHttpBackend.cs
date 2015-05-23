@@ -7,13 +7,6 @@ namespace Bastet.Backends.Http
     public abstract class BaseHttpBackend
         : IBackend
     {
-        public Uri BaseUri { get; private set; }
-
-        protected BaseHttpBackend(Uri baseUri)
-        {
-            BaseUri = baseUri;
-        }
-
         public async Task<IBackendResponse> Request(Device device, BackendRequest request)
         {
             throw new NotImplementedException();
@@ -32,5 +25,8 @@ namespace Bastet.Backends.Http
             throw new NotImplementedException("Fetch swaggerPath");
             throw new NotImplementedException("Turn this into a BackendDescription");
         }
+
+
+        public abstract void Setup(Database.Database database);
     }
 }

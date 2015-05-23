@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Bastet.Backends;
-using Bastet.Backends.Coap;
+using Bastet.Backends.Http.Basic;
 using CommandLine;
 using CommandLine.Text;
 using Newtonsoft.Json.Linq;
@@ -22,12 +22,10 @@ namespace Bastet
         {
             _daemon = options.Daemon;
 
-            if (options.CleanStart)
-                options.InteractiveSetup();
-
-            Database.Database db = new Database.Database(options.CleanStart, options.ConnectionString);
+            Database.Database db = new Database.Database(options.ConnectionString);
             //BackendFactory.Register<HiveBackend>(db);
-            BackendFactory.Register<CoapBackend>(db);
+            //BackendFactory.Register<CoapBackend>(db);
+            BackendFactory.Register<HttpBackend>(db);
 
             _server = new HttpServer.HttpServer(options.HttpPort, db.ConnectionFactory);
         }
@@ -69,11 +67,6 @@ namespace Bastet
 
     public class Options
     {
-        [Option('s', "setup", Required = false, HelpText = "If set, clear all data from the database on startup")]
-        // ReSharper disable UnusedAutoPropertyAccessor.Global
-        public bool CleanStart { get; set; }
-        // ReSharper restore UnusedAutoPropertyAccessor.Global
-
         [Option('h', "http", Required = true, HelpText = "The port to host the HTTP server on")]
         // ReSharper disable UnusedAutoPropertyAccessor.Global
         public ushort HttpPort { get; set; }
@@ -104,97 +97,6 @@ namespace Bastet
         {
             return HelpText.AutoBuild(this);
         }
-
-        #region interactive setup
-        public void InteractiveSetup()
-        {
-            if (ConnectionString == null)
-                ConnectionString = InteractiveConnectionString();
-        }
-
-        private static string InteractiveConnectionString()
-        {
-            Console.WriteLine("Which type of database do you want to use?");
-            var lines = new[]
-            {
-                new { Name = "sqlite", Specific = (Func<string>)ConfigSqlite },
-                new { Name = "sqlite (in memory)", Specific = new Func<string>(() => "Data Source=:memory:;Version=3;New=True;") },
-                new { Name = "other (enter complete connection string)", Specific = (Func<string>)ReadConnectionString }
-            };
-
-            var posX = Console.CursorLeft;
-            var posY = Console.CursorTop;
-
-            int highlighted = 0;
-            while (true)
-            {
-                Console.SetCursorPosition(posX, posY);
-
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    if (i == highlighted)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Green;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                        Console.WriteLine((i + 1) + ". > " + lines[i].Name);
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine((i + 1) + ".   " + lines[i].Name);
-                    }
-                }
-
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.White;
-
-                Console.CursorVisible = false;
-                var key = Console.ReadKey();
-                if (Char.IsNumber(key.KeyChar))
-                {
-                    var num = int.Parse(key.KeyChar.ToString(CultureInfo.InvariantCulture));
-                    highlighted = (num - 1) < lines.Length ? (num - 1) : highlighted;
-                }
-                else switch (key.Key)
-                {
-                    case ConsoleKey.UpArrow:
-                        highlighted = highlighted - 1;
-                        if (highlighted == -1)
-                            highlighted = lines.Length - 1;
-                        break;
-                    case ConsoleKey.DownArrow:
-                        highlighted = (highlighted + 1) % lines.Length;
-                        break;
-                    case ConsoleKey.Enter: {
-                        var str = lines[highlighted].Specific();
-                        Console.WriteLine(" - Using Configured Connection String, Next Time Run With:");
-                        Console.WriteLine();
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("\t--connection='{0}'", str);
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine();
-                        return str;
-                    }
-                }
-            }
-        }
-
-        private static string ConfigSqlite()
-        {
-            Console.WriteLine("Where Should The Database be Stored (Enter a path)?");
-            Console.Write("> ");
-            var path = Console.ReadLine();
-            return string.Format("Data Source={0};Version=3;", path);
-        }
-
-        private static string ReadConnectionString()
-        {
-            Console.WriteLine("Enter Connection String:");
-            Console.Write("> ");
-            return Console.ReadLine();
-        }
-        #endregion
 
         #region load from file
         public bool LoadFromFile()

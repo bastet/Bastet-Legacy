@@ -20,6 +20,12 @@ namespace Bastet.Backends
         /// <returns></returns>
         Task<BackendDescription> Describe(Device device);
 
+        /// <summary>
+        /// Setup the database for this backend
+        /// </summary>
+        /// <param name="database"></param>
+        void Setup(Database.Database database);
+
         //todo: observe
     }
 }
