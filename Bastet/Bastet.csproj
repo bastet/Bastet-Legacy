@@ -185,11 +185,8 @@
     <Compile Include="Backends\BackendDescription.cs" />
     <Compile Include="Backends\IBackendResponse.cs" />
     <Compile Include="Database\Database.cs" />
-    <Compile Include="Database\Model\BlobReading.cs" />
     <Compile Include="Database\Model\Claim.cs" />
-    <Compile Include="Database\Model\DecimalReading.cs" />
     <Compile Include="Database\Model\Session.cs" />
-    <Compile Include="Database\Model\StringReading.cs" />
     <Compile Include="Database\Model\User.cs" />
     <Compile Include="HttpServer\Csv\CsvProcessor.cs" />
     <Compile Include="HttpServer\Csv\CsvResponse.cs" />
@@ -207,13 +204,9 @@
     <Compile Include="HttpServer\ModuleHelpers.cs" />
     <Compile Include="HttpServer\HttpServer.cs" />
     <Compile Include="Database\Model\Device.cs" />
-    <Compile Include="Database\Model\IReading.cs" />
-    <Compile Include="Database\Model\Sensor.cs" />
     <Compile Include="HttpServer\Modules\AuthenticationModule.cs" />
     <Compile Include="HttpServer\Modules\ClaimsModule.cs" />
     <Compile Include="HttpServer\Modules\DeviceProxying.cs" />
-    <Compile Include="HttpServer\Modules\ReadingsModule.cs" />
-    <Compile Include="HttpServer\Modules\SensorsModule.cs" />
     <Compile Include="HttpServer\Modules\DevicesModule.cs" />
     <Compile Include="HttpServer\Modules\RootModule.cs" />
     <Compile Include="HttpServer\Modules\UsersModule.cs" />

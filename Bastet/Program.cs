@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Bastet.Backends;
+using Bastet.Backends.Coap;
 using CommandLine;
 using CommandLine.Text;
 using Newtonsoft.Json.Linq;
@@ -24,6 +26,8 @@ namespace Bastet
                 options.InteractiveSetup();
 
             Database.Database db = new Database.Database(options.CleanStart, options.ConnectionString);
+            //BackendFactory.Register<HiveBackend>(db);
+            BackendFactory.Register<CoapBackend>(db);
 
             _server = new HttpServer.HttpServer(options.HttpPort, db.ConnectionFactory);
         }

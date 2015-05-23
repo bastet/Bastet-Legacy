@@ -7,15 +7,11 @@ namespace Bastet.Backends.Http
     public abstract class BaseHttpBackend
         : IBackend
     {
-        private readonly Uri _baseUri;
-        private readonly bool _useCoreLink;
-        private readonly string _swaggerPath;
+        public Uri BaseUri { get; private set; }
 
-        public BaseHttpBackend(Uri baseUri, bool useCoreLink = false, string swaggerPath = "swagger.json")
+        protected BaseHttpBackend(Uri baseUri)
         {
-            _baseUri = baseUri;
-            _useCoreLink = useCoreLink;
-            _swaggerPath = swaggerPath;
+            BaseUri = baseUri;
         }
 
         public async Task<IBackendResponse> Request(Device device, BackendRequest request)

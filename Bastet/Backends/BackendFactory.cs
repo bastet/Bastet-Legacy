@@ -1,4 +1,5 @@
-﻿using Bastet.Database.Model;
+﻿using System.Collections.Concurrent;
+using Bastet.Database.Model;
 using System;
 using System.Linq;
 using System.Management.Instrumentation;
@@ -7,6 +8,13 @@ namespace Bastet.Backends
 {
     public static class BackendFactory
     {
+        private static readonly ConcurrentDictionary<Type, bool> _registeredBackends = new ConcurrentDictionary<Type, bool>(); 
+
+        public static void Register<T>(Database.Database database) where T : IBackend
+        {
+            throw new NotImplementedException();
+        }
+
         public static IBackend Backend(this Device device)
         {
             return Backend(device.Backend);
@@ -26,14 +34,18 @@ namespace Bastet.Backends
 
         public static Type BackendType(string name)
         {
+            //Find the backend for the given type name
             Type type = Type.GetType(name ?? "", false, true);
             if (type == null)
             {
-                type = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(a => a.GetTypes())
+                type = _registeredBackends.Keys
                     .Where(t => typeof(IBackend).IsAssignableFrom(t))
                     .SingleOrDefault(x => x.Name == name);
             }
+
+            //Check that this backend has been registered
+            if (type != null && !_registeredBackends.ContainsKey(type))
+                type = null;
 
             return type;
         }

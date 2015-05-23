@@ -28,11 +28,6 @@ namespace Bastet.Database
                 var models = new[]
                 {
                     typeof(Device),
-                    typeof(Sensor),
-                    typeof(StringReading),
-                    typeof(DecimalReading),
-                    typeof(BlobReading),
-
                     typeof(User),
                     typeof(Session),
                     typeof(Claim),
