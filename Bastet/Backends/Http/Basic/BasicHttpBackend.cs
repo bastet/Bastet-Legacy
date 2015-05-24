@@ -5,9 +5,14 @@ using ServiceStack.OrmLite;
 
 namespace Bastet.Backends.Http.Basic
 {
-    public class HttpBackend
+    public class BasicHttpBackend
         : BaseHttpBackend
     {
+        public override Task<IBackendResponse> Request(Device device, BackendRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         public override Task<BackendDescription> Describe(Device device)
         {
             throw new NotImplementedException();

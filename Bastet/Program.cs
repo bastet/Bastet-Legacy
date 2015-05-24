@@ -25,7 +25,7 @@ namespace Bastet
             Database.Database db = new Database.Database(options.ConnectionString);
             //BackendFactory.Register<HiveBackend>(db);
             //BackendFactory.Register<CoapBackend>(db);
-            BackendFactory.Register<HttpBackend>(db);
+            BackendFactory.Register<BasicHttpBackend>(db);
 
             _server = new HttpServer.HttpServer(options.HttpPort, db.ConnectionFactory);
         }

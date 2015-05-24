@@ -181,7 +181,7 @@
     <Compile Include="Backends\Coap\CoapBackend.cs" />
     <Compile Include="Backends\Http\BaseHttpBackend.cs" />
     <Compile Include="Backends\Http\Basic\BasicHttpModel.cs" />
-    <Compile Include="Backends\Http\Basic\HttpBackend.cs" />
+    <Compile Include="Backends\Http\Basic\BasicHttpBackend.cs" />
     <Compile Include="Backends\Http\Hive\HiveBackend.cs" />
     <Compile Include="Backends\IBackend.cs" />
     <Compile Include="Backends\BackendDescription.cs" />
