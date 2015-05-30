@@ -228,16 +228,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="HttpServer\Views\Root\Root.html">
+    <None Include="HttpServer\Static\index.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="HttpServer\Views\Root\Setup.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="sqlite3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
