@@ -6,6 +6,7 @@ using MoreLinq;
 using Nancy;
 using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
+using Nancy.Conventions;
 using Nancy.LightningCache.Extensions;
 using Nancy.Routing;
 using Nancy.TinyIoc;
@@ -45,6 +46,12 @@ namespace Bastet.HttpServer
 
                 return null;
             });
+        }
+
+        protected override void ConfigureConventions(NancyConventions nancyConventions)
+        {
+            nancyConventions.StaticContentsConventions.Add(StaticContentConventionBuilder.AddDirectory("/", @"Static"));
+            base.ConfigureConventions(nancyConventions);
         }
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
