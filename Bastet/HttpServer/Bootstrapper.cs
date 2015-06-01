@@ -42,10 +42,9 @@ namespace Bastet.HttpServer
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Access-Control-Allow-Headers", "Content-Type"));
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Accept", "application/json"));
 
-            //Default format to JSON
+            //Default format to JSON (very low priority)
             ApplicationPipelines.BeforeRequest.AddItemToStartOfPipeline(x => {
-                x.Request.Headers.Accept = x.Request.Headers.Accept.Concat(new Tuple<string, decimal>("application/json", 1.05m));
-
+                x.Request.Headers.Accept = x.Request.Headers.Accept.Concat(new Tuple<string, decimal>("application/json", 0.01m));
                 return null;
             });
 
