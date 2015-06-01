@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using MoreLinq;
 using ServiceStack.DataAnnotations;
 
 namespace Bastet.Database.Model
