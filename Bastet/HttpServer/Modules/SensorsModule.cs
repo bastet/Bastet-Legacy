@@ -20,8 +20,6 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            //this.RequiresHttps();
-
             Get["/"] = ListSensors;
             Post["/"] = CreateSensor;
 

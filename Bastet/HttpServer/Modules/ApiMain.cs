@@ -9,8 +9,6 @@ namespace Bastet.HttpServer.Modules
 
         public ApiMain()
         {
-            //this.RequiresHttps();
-
             Get[PATH] = ListRoutes;
         }
 

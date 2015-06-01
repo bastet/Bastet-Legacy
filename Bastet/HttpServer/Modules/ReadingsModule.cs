@@ -21,8 +21,6 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            //this.RequiresHttps();
-
             Get["/"] = ListAllReadings;
 
             Get["/strings"] = ListReadings<StringReading, string>;

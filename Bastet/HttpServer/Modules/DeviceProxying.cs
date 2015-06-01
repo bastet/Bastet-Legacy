@@ -32,8 +32,6 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            //this.RequiresHttps();
-
             Get["/.well-known/core", runAsync: true] = ProxyWellKnownCore;
 
             Get["/", runAsync: true] = Get["/{endpoint*}", runAsync: true] = Proxy;

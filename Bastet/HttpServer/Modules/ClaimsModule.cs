@@ -22,8 +22,6 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            //this.RequiresHttps();
-
             Get["/", runAsync: true] = ListClaims;
             Post["/", runAsync: true] = CreateClaim;
             Delete["/", runAsync: true] = DeleteClaim;
