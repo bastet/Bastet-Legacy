@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Nancy;
+using Nancy.Cookies;
+using Nancy.Security;
+using ServiceStack.OrmLite;
+using System;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Bastet.Database.Model;
-using Nancy;
-using Nancy.Cookies;
-using Nancy.Security;
-using ServiceStack.OrmLite;
+using Session = Bastet.Database.Model.Session;
+using User = Bastet.Database.Model.User;
 
 namespace Bastet.HttpServer.Modules
 {
@@ -82,12 +83,10 @@ namespace Bastet.HttpServer.Modules
                     //Save any changes made
                     transaction.Commit();
 
+                    var user = userIdentity;
                     return Negotiate
-                        .WithCookie(CreateCookie(session.SessionKey))
-                        .WithModel(new
-                        {
-                            SessionKey = session.SessionKey,
-                        });
+                        .WithCookie(CreateCookie(user.Session.SessionKey))
+                        .WithModel(new Responses.Session(user, user.Session.SessionKey));
                 }
             }, ct);
         }
@@ -98,13 +97,10 @@ namespace Bastet.HttpServer.Modules
             {
                 this.RequiresAuthentication();
 
+                var user = ((Identity)Context.CurrentUser);
                 return Negotiate
-                    .WithCookie(CreateCookie(((Identity) Context.CurrentUser).Session.SessionKey))
-                    .WithModel(new
-                    {
-                        User = ModuleHelpers.CreateUrl(Request, UsersModule.PATH, Uri.EscapeUriString(Context.CurrentUser.UserName)),
-                        Claims = Context.CurrentUser.Claims.ToArray()
-                    });
+                    .WithCookie(CreateCookie(user.Session.SessionKey))
+                    .WithModel(new Responses.Session(user, user.Session.SessionKey));
             }, ct);
         }
 
@@ -120,10 +116,9 @@ namespace Bastet.HttpServer.Modules
             }, ct);
         }
 
-        private NancyCookie CreateCookie(string key)
+        private static NancyCookie CreateCookie(string key)
         {
-            //todo: set secure: true when HTTPs is working
-            return new NancyCookie("Bastet_Session_Key", key);//, false, true)
+            return new NancyCookie("Bastet_Session_Key", key);
         }
 
         private Identity ValidateUser(string userName, string password)

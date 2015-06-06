@@ -1,6 +1,6 @@
-﻿using System.Collections.Concurrent;
-using Bastet.Database.Model;
+﻿using Bastet.Database.Model;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Management.Instrumentation;
 
@@ -10,9 +10,10 @@ namespace Bastet.Backends
     {
         private static readonly ConcurrentDictionary<Type, bool> _registeredBackends = new ConcurrentDictionary<Type, bool>(); 
 
-        public static void Register<T>(Database.Database database) where T : IBackend
+        public static void Register<T>(Database.Database database) where T : IBackend, new()
         {
-            throw new NotImplementedException();
+            var b = new T();
+            b.Setup(database);
         }
 
         public static IBackend Backend(this Device device)

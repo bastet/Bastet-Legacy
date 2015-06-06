@@ -18,6 +18,7 @@ namespace Bastet.Database
         /// <summary>
         /// Set to true to recreate the database (losing all data)
         /// <param name="connectionString"></param>
+        /// </summary>
         public Database(string connectionString = null)
         {
             _connectionFactory = new OrmLiteConnectionFactory(connectionString, SqliteDialect.Provider);
