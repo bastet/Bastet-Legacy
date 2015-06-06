@@ -22,8 +22,6 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            //this.RequiresHttps();
-
             Get["/"] = ListDevices;
             Post["/"] = CreateDevice;
 

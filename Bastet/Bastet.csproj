@@ -114,6 +114,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp, Version=105.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RestSharp.105.1.0\lib\net4\RestSharp.dll</HintPath>
@@ -196,6 +199,13 @@
     <Compile Include="HttpServer\Modules\ApiMain.cs" />
     <Compile Include="HttpServer\Modules\WellKnownCore.cs" />
     <Compile Include="HttpServer\NancyRootPath.cs" />
+    <Compile Include="HttpServer\Responses\MainRouteList.cs" />
+    <Compile Include="HttpServer\Responses\BaseVersioningProcessor.cs" />
+    <Compile Include="HttpServer\Responses\Formats\IFormat.cs" />
+    <Compile Include="HttpServer\Responses\Formats\JsonFormat.cs" />
+    <Compile Include="HttpServer\Responses\Formats\ProtobufFormat.cs" />
+    <Compile Include="HttpServer\Responses\MediaTypeName.cs" />
+    <Compile Include="HttpServer\Responses\v1\MainRouteList.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Concat.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="SecurityHelpers.cs" />

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Bastet.Database.Model;
 using MoreLinq;
@@ -9,6 +11,7 @@ using Nancy.Bootstrapper;
 using Nancy.Conventions;
 using Nancy.LightningCache.Extensions;
 using Nancy.Routing;
+using Nancy.Security;
 using Nancy.TinyIoc;
 using Newtonsoft.Json;
 using ServiceStack.Data;
@@ -39,11 +42,17 @@ namespace Bastet.HttpServer
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Access-Control-Allow-Headers", "Content-Type"));
             ApplicationPipelines.AfterRequest.AddItemToEndOfPipeline(x => x.Response.WithHeader("Accept", "application/json"));
 
-            ApplicationPipelines.BeforeRequest.AddItemToStartOfPipeline(x =>
-            {
-                //Default format to JSON
-                x.Request.Headers.Accept = x.Request.Headers.Accept.Concat(new Tuple<string, decimal>("application/json", 1.05m));
+            //Default format to JSON (very low priority)
+            ApplicationPipelines.BeforeRequest.AddItemToStartOfPipeline(x => {
+                x.Request.Headers.Accept = x.Request.Headers.Accept.Concat(new Tuple<string, decimal>("application/json", 0.01m));
+                return null;
+            });
 
+            //Make sure this is being accessed over a secure connection
+            var httpsRedirect = SecurityHooks.RequiresHttps(redirect: false);
+            ApplicationPipelines.BeforeRequest.AddItemToEndOfPipeline(x => {
+                if (!IsSecure(x))
+                    return httpsRedirect(x);
                 return null;
             });
         }
@@ -93,6 +102,27 @@ namespace Bastet.HttpServer
 
                 return new Identity(Identity.GetClaims(user, connection), user, session);
             }));
+        }
+
+        private bool IsSecure(NancyContext context)
+        {
+            //If we're directly access via a secure scheme everything is ok
+            if (context.Request.Url.IsSecure)
+                return true;
+
+            //We might be directly accessed via an insecure scheme because a reverse proxy did https termination already, check if a header has been set indicating this
+            if (context.Request.Headers.Keys.Contains("X-Forwarded-Protocol") && context.Request.Headers["X-Forwarded-Protocol"].Contains("https"))
+                return true;
+            if (context.Request.Headers.Keys.Contains("X-Forwarded-Proto") && context.Request.Headers["X-Forwarded-Proto"].Contains("https"))
+                return true;
+
+#if DEBUG
+            var frame = new StackTrace(true).GetFrame(0);
+            Console.WriteLine("Skipping HTTPS check (DEBUG MODE) {0} Ln{1}", frame.GetFileName(), frame.GetFileLineNumber());
+            return true;
+#else
+            return false;
+#endif
         }
 
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context)

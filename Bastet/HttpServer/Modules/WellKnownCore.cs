@@ -34,7 +34,6 @@ namespace Bastet.HttpServer.Modules
             return Task<dynamic>.Factory.StartNew(() => {
 
                 this.RequiresAuthentication();
-                //this.RequiresHttps();
 
                 var user = Context.CurrentUser as Identity;
                 if (user == null)

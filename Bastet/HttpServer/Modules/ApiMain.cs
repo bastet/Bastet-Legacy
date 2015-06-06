@@ -1,4 +1,5 @@
-﻿using Nancy;
+﻿using Bastet.HttpServer.Responses;
+using Nancy;
 
 namespace Bastet.HttpServer.Modules
 {
@@ -9,14 +10,12 @@ namespace Bastet.HttpServer.Modules
 
         public ApiMain()
         {
-            //this.RequiresHttps();
-
             Get[PATH] = ListRoutes;
         }
 
         private dynamic ListRoutes(dynamic parameters)
         {
-            return new
+            return new MainRouteList
             {
                 Devices = ModuleHelpers.CreateUrl(Request, DevicesModule.PATH),
                 Authentication = ModuleHelpers.CreateUrl(Request, AuthenticationModule.PATH),

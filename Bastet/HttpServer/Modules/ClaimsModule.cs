@@ -22,8 +22,6 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            //this.RequiresHttps();
-
             Get["/", runAsync: true] = ListClaims;
             Post["/", runAsync: true] = CreateClaim;
             Delete["/", runAsync: true] = DeleteClaim;
@@ -50,10 +48,17 @@ namespace Bastet.HttpServer.Modules
 
         private Task<dynamic> CreateClaim(dynamic parameters, CancellationToken ct)
         {
-            return Task<dynamic>.Factory.StartNew(() =>
-            {
+            return Task<dynamic>.Factory.StartNew(() => {
+
+                //Read the claim we're trying to give away
+                string claimName;
+                using (var reader = new StreamReader(Request.Body))
+                    claimName = reader.ReadToEnd();
+
+                //Check that the user is logged in and has the create-claim claim *AND* the claim they're trying to give away
                 this.RequiresAuthentication();
-                this.RequiresAnyClaim(new[] { "superuser", "create-claim" });
+                if (!Context.CurrentUser.Claims.Contains("superuser"))
+                    this.RequiresClaims(new[] { "create-claim", claimName });
 
                 using (var transaction = _connection.OpenTransaction())
                 {

@@ -25,8 +25,6 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            //this.RequiresHttps();
-
             Get["/", runAsync: true] = ListUsers;
             Post["/", runAsync: true] = CreateUser;
 

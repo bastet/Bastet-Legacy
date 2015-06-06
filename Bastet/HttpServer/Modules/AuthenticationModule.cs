@@ -24,8 +24,6 @@ namespace Bastet.HttpServer.Modules
         {
             _connection = connection;
 
-            //this.RequiresHttps();
-
             Get["/", runAsync: true] = GetAuth;
             Post["/", runAsync: true] = PostAuth;
             Delete["/", runAsync: true] = DeleteAuth;
