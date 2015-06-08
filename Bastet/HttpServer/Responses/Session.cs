@@ -8,7 +8,7 @@ namespace Bastet.HttpServer.Responses
 
         public IUserIdentity User { get; set; }
 
-        public Session(Identity user, string sessionKey)
+        public Session(IUserIdentity user, string sessionKey)
         {
             User = user;
             SessionKey = sessionKey;

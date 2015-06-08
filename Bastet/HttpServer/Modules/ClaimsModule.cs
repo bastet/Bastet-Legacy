@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bastet.Database.Model;
+using Bastet.HttpServer.Responses;
 using Nancy;
 using Nancy.Security;
 using ServiceStack.OrmLite;
+using User = Bastet.Database.Model.User;
 
 namespace Bastet.HttpServer.Modules
 {
@@ -27,11 +29,6 @@ namespace Bastet.HttpServer.Modules
             Delete["/", runAsync: true] = DeleteClaim;
         }
 
-        private static dynamic SerializeClaim(Claim claim)
-        {
-            return claim.Name;
-        }
-
         private Task<dynamic> ListClaims(dynamic parameters, CancellationToken ct)
         {
             return Task<dynamic>.Factory.StartNew(() =>
@@ -42,7 +39,7 @@ namespace Bastet.HttpServer.Modules
                 if (Context.CurrentUser.UserName != (string)parameters.username)
                     this.RequiresAnyClaim(new[] { "superuser", "list-claims" });
 
-                return Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection).Select(SerializeClaim).ToArray();
+                return new ClaimsList(Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection));
             }, ct);
         }
 
@@ -82,7 +79,7 @@ namespace Bastet.HttpServer.Modules
                     transaction.Commit();
                 }
 
-                return Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection).Select(SerializeClaim).ToArray();
+                return new ClaimsList(Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection));
             }, ct);
         }
 
@@ -116,7 +113,7 @@ namespace Bastet.HttpServer.Modules
                     transaction.Commit();
                 }
 
-                return Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection).Select(SerializeClaim).ToArray();
+                return new ClaimsList(Identity.GetClaims(((Identity)Context.CurrentUser).User, _connection));
             }, ct);
         }
     }

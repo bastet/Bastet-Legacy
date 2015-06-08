@@ -200,6 +200,7 @@
     <Compile Include="HttpServer\Modules\WellKnownCore.cs" />
     <Compile Include="HttpServer\NancyRootPath.cs" />
     <Compile Include="HttpServer\Responses\Auth.cs" />
+    <Compile Include="HttpServer\Responses\ClaimsList.cs" />
     <Compile Include="HttpServer\Responses\MainRouteList.cs" />
     <Compile Include="HttpServer\Responses\BaseVersioningProcessor.cs" />
     <Compile Include="HttpServer\Responses\Formats\IFormat.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="HttpServer\Responses\Session.cs" />
     <Compile Include="HttpServer\Responses\User.cs" />
     <Compile Include="HttpServer\Responses\v1\MainRouteList.cs" />
+    <Compile Include="HttpServer\Responses\v1\ClaimsList.cs" />
     <Compile Include="HttpServer\Responses\v1\User.cs" />
     <Compile Include="HttpServer\Responses\v1\Session.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Concat.cs" />

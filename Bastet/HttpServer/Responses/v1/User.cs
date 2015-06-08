@@ -23,7 +23,7 @@ namespace Bastet.HttpServer.Responses.v1
     public class UserV1
     {
         [ProtoMember(1)]
-        public string[] claims { get; set; }
+        public string[] claims {get; set;}
 
         [ProtoMember(2)]
         public string username { get; set; }

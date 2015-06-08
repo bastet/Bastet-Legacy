@@ -6,13 +6,13 @@ namespace Bastet.Database.Model
     public class Claim
     {
         /// <summary>
-        /// The unique ID of this device
+        /// The unique ID of this claim
         /// </summary>
         [AutoIncrement]
         public long Id { get; [UsedImplicitly]set; }
 
         /// <summary>
-        /// The ID of the user this session is for
+        /// The ID of the user this claim is for
         /// </summary>
         public long UserId { get; set; }
 

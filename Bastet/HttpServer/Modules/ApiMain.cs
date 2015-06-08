@@ -13,7 +13,7 @@ namespace Bastet.HttpServer.Modules
             Get[PATH] = ListRoutes;
         }
 
-        private dynamic ListRoutes(dynamic parameters)
+        private static dynamic ListRoutes(dynamic parameters)
         {
             return new MainRouteList
             {
